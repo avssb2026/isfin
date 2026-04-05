@@ -28,10 +28,24 @@ export default function ProductPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lastName, firstName, phone }),
       });
-      const data = await res.json();
+      const raw = await res.text();
+      let data: { error?: string } = {};
+      if (raw) {
+        try {
+          data = JSON.parse(raw) as { error?: string };
+        } catch {
+          setStatus("err");
+          setMsg(
+            res.ok
+              ? "Не удалось разобрать ответ сервера."
+              : `Ошибка сервера (${res.status}). Попробуйте позже.`,
+          );
+          return;
+        }
+      }
       if (!res.ok) {
         setStatus("err");
-        setMsg((data as { error?: string }).error ?? "Ошибка отправки");
+        setMsg(data.error ?? "Ошибка отправки");
         return;
       }
       setStatus("ok");
@@ -41,7 +55,7 @@ export default function ProductPage() {
       setPhone("");
     } catch {
       setStatus("err");
-      setMsg("Сеть недоступна. Попробуйте позже.");
+      setMsg("Не удалось связаться с сервером. Проверьте интернет и попробуйте снова.");
     }
   }
 

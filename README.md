@@ -12,7 +12,7 @@
 ## Требования
 
 - Node.js 20+
-- PostgreSQL 14+
+- База **PostgreSQL** в облаке (рекомендуется **[Prisma Postgres](https://www.prisma.io/docs/postgres)**): создайте инстанс и скопируйте строку подключения в `DATABASE_URL`.
 
 ## Быстрый старт
 
@@ -22,7 +22,7 @@
    cp .env.example .env
    ```
 
-   Задайте `DATABASE_URL`, сгенерируйте `AUTH_SECRET` (например `openssl rand -base64 32`), укажите `AUTH_URL` и `NEXT_PUBLIC_APP_URL` (в разработке обычно `http://localhost:3000`).
+   Укажите **`DATABASE_URL`** на ваш Prisma Postgres (или другой управляемый PostgreSQL), сгенерируйте **`AUTH_SECRET`** (например `openssl rand -base64 32`), задайте **`AUTH_URL`** и **`NEXT_PUBLIC_APP_URL`** (локально обычно `http://localhost:3000`).
 
 2. Установите зависимости и примените миграции:
 
@@ -66,7 +66,7 @@ git push -u origin main
 
 ## Деплой
 
-Подходит **Vercel**, **Netlify** (с адаптером Next), **Railway**. Задайте на хостинге те же переменные, что в `.env.example`, в том числе `DATABASE_URL` к управляемому PostgreSQL (Neon, Supabase, Railway Postgres и т.д.).
+Подходит **Vercel**, **Netlify** (с адаптером Next), **Railway**. Задайте на хостинге те же переменные, что в `.env.example`, в том числе **`DATABASE_URL`** (тот же Prisma Postgres или другой облачный PostgreSQL).
 
 Секреты храните только в настройках окружения платформы, не коммитьте `.env`.
 

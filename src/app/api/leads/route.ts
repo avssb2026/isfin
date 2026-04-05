@@ -33,24 +33,34 @@ export async function POST(req: Request) {
 
   const { lastName, firstName, phone } = parsed.data;
 
-  const lead = await prisma.lead.create({
-    data: {
-      lastName,
-      firstName,
-      phone,
-      source: "product",
-      status: "NEW",
-    },
-  });
+  try {
+    const lead = await prisma.lead.create({
+      data: {
+        lastName,
+        firstName,
+        phone,
+        source: "product",
+        status: "NEW",
+      },
+    });
 
-  await prisma.activityLog.create({
-    data: {
-      leadId: lead.id,
-      operatorId: null,
-      type: "APPLICATION",
-      note: "Заявка отправлена с продуктовой страницы",
-    },
-  });
+    await prisma.activityLog.create({
+      data: {
+        leadId: lead.id,
+        operatorId: null,
+        type: "APPLICATION",
+        note: "Заявка отправлена с продуктовой страницы",
+      },
+    });
 
-  return NextResponse.json({ ok: true, id: lead.id });
+    return NextResponse.json({ ok: true, id: lead.id });
+  } catch (err) {
+    console.error("POST /api/leads", err);
+    return NextResponse.json(
+      {
+        error: "Сервис временно недоступен. Попробуйте позже или напишите в чат на сайте.",
+      },
+      { status: 503 },
+    );
+  }
 }
