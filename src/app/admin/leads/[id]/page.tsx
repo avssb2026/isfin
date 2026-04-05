@@ -12,6 +12,8 @@ type Activity = {
   operator: { name: string; email: string } | null;
 };
 
+type OperatorOption = { id: string; name: string; email: string };
+
 type LeadDetail = {
   id: string;
   lastName: string;
@@ -20,6 +22,8 @@ type LeadDetail = {
   status: string;
   source: string;
   createdAt: string;
+  assignedOperatorId: string | null;
+  assignedOperator: OperatorOption | null;
   activityLogs: Activity[];
 };
 
@@ -29,6 +33,8 @@ export default function LeadDetailPage() {
   const [lead, setLead] = useState<LeadDetail | null>(null);
   const [note, setNote] = useState("");
   const [status, setStatus] = useState<string>("NEW");
+  const [assigneeId, setAssigneeId] = useState<string>("");
+  const [operators, setOperators] = useState<OperatorOption[]>([]);
   const [err, setErr] = useState<string | null>(null);
 
   async function load() {
@@ -41,11 +47,21 @@ export default function LeadDetailPage() {
     const l = data.lead as LeadDetail;
     setLead(l);
     setStatus(l.status);
+    setAssigneeId(l.assignedOperatorId ?? "");
   }
 
   useEffect(() => {
     void load();
   }, [id]);
+
+  useEffect(() => {
+    void (async () => {
+      const res = await fetch("/api/admin/operators");
+      if (!res.ok) return;
+      const data = await res.json();
+      setOperators((data.operators as OperatorOption[]) ?? []);
+    })();
+  }, []);
 
   async function addNote(e: React.FormEvent) {
     e.preventDefault();
@@ -71,6 +87,19 @@ export default function LeadDetailPage() {
     void load();
   }
 
+  async function saveAssignee(e: React.FormEvent) {
+    e.preventDefault();
+    const res = await fetch(`/api/admin/leads/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        assignedOperatorId: assigneeId === "" ? null : assigneeId,
+      }),
+    });
+    if (!res.ok) return;
+    void load();
+  }
+
   if (err) return <p className="text-red-600">{err}</p>;
   if (!lead) return <p className="text-[var(--muted)]">Загрузка…</p>;
 
@@ -84,26 +113,52 @@ export default function LeadDetailPage() {
       </h1>
       <p className="text-[var(--muted)]">{lead.phone}</p>
 
-      <form onSubmit={saveStatus} className="mt-6 flex flex-wrap items-end gap-4">
-        <label className="text-sm">
-          <span className="text-[var(--muted)]">Статус</span>
-          <select
-            className="mt-1 block rounded-lg border border-[var(--border)] px-3 py-2"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
+      <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:flex-wrap sm:items-end">
+        <form onSubmit={saveStatus} className="flex flex-wrap items-end gap-4">
+          <label className="text-sm">
+            <span className="text-[var(--muted)]">Статус</span>
+            <select
+              className="mt-1 block rounded-lg border border-[var(--border)] px-3 py-2"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="NEW">NEW</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="CLOSED">CLOSED</option>
+            </select>
+          </label>
+          <button
+            type="submit"
+            className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--accent-hover)]"
           >
-            <option value="NEW">NEW</option>
-            <option value="IN_PROGRESS">IN_PROGRESS</option>
-            <option value="CLOSED">CLOSED</option>
-          </select>
-        </label>
-        <button
-          type="submit"
-          className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--accent-hover)]"
-        >
-          Сохранить статус
-        </button>
-      </form>
+            Сохранить статус
+          </button>
+        </form>
+
+        <form onSubmit={saveAssignee} className="flex flex-wrap items-end gap-4">
+          <label className="text-sm">
+            <span className="text-[var(--muted)]">Ответственный оператор</span>
+            <select
+              className="mt-1 block min-w-[220px] rounded-lg border border-[var(--border)] px-3 py-2"
+              value={assigneeId}
+              onChange={(e) => setAssigneeId(e.target.value)}
+            >
+              <option value="">Не назначен</option>
+              {operators.map((op) => (
+                <option key={op.id} value={op.id}>
+                  {op.name} ({op.email})
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="submit"
+            className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm hover:bg-[var(--bg)]"
+          >
+            Сохранить ответственного
+          </button>
+        </form>
+      </div>
 
       <section className="mt-10">
         <h2 className="text-lg font-semibold">История взаимодействий</h2>

@@ -37,20 +37,25 @@ model User {
   createdAt      DateTime      @default(now())
   activityLogs   ActivityLog[]
   assignedChats  ChatSession[] @relation("AssignedOperator")
+  assignedLeads  Lead[]        @relation("LeadAssignedOperator")
   chatMessages   ChatMessage[]
 }
 
 model Lead {
-  id           String        @id @default(cuid())
-  lastName     String
-  firstName    String
-  phone        String
-  source       String        @default("product")
-  status       LeadStatus    @default(NEW)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  activityLogs ActivityLog[]
-  chatSessions ChatSession[]
+  id                   String        @id @default(cuid())
+  lastName             String
+  firstName            String
+  phone                String
+  source               String        @default("product")
+  status               LeadStatus    @default(NEW)
+  assignedOperatorId   String?
+  assignedOperator     User?         @relation("LeadAssignedOperator", fields: [assignedOperatorId], references: [id], onDelete: SetNull)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  activityLogs         ActivityLog[]
+  chatSessions         ChatSession[]
+
+  @@index([assignedOperatorId])
 }
 
 model ActivityLog {

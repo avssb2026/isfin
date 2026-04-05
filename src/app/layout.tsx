@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
-import { ChatWidget } from "@/components/ChatWidget";
+import { ConditionalChatWidget } from "@/components/ConditionalChatWidget";
 
 export const metadata: Metadata = {
   title: "Ипотека Мурабаха — исламское финансирование жилья",
@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className="min-h-screen antialiased">
         <Providers>{children}</Providers>
-        <ChatWidget />
+        <ConditionalChatWidget />
       </body>
     </html>
   );

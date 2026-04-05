@@ -23,6 +23,17 @@ export const chatMessageSchema = z.object({
 
 export const leadStatusSchema = z.enum(["NEW", "IN_PROGRESS", "CLOSED"]);
 
+/** Обновление заявки: хотя бы одно поле */
+export const leadPatchSchema = z
+  .object({
+    status: leadStatusSchema.optional(),
+    assignedOperatorId: z.string().cuid().nullable().optional(),
+  })
+  .refine((d) => d.status !== undefined || d.assignedOperatorId !== undefined, {
+    message: "Укажите статус или ответственного",
+  });
+
+
 export const activityNoteSchema = z.object({
   note: z.string().min(1).max(8000),
 });
