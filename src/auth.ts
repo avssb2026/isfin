@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 import { operatorFullName } from "@/lib/operator-name";
+import { verifyMathCaptcha } from "@/lib/math-captcha";
 import { touchOperatorActivityIfStale } from "@/lib/touch-operator-activity";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -13,11 +14,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        captchaToken: { label: "captchaToken", type: "text" },
+        captchaAnswer: { label: "captchaAnswer", type: "text" },
       },
       authorize: async (credentials) => {
         const email = credentials?.email;
         const password = credentials?.password;
+        const captchaToken =
+          typeof credentials?.captchaToken === "string" ? credentials.captchaToken : undefined;
+        const captchaAnswer =
+          credentials?.captchaAnswer !== undefined && credentials?.captchaAnswer !== null
+            ? String(credentials.captchaAnswer)
+            : undefined;
         if (!email || !password) return null;
+        if (!verifyMathCaptcha(captchaToken, captchaAnswer)) return null;
 
         const user = await prisma.bankOperator.findUnique({
           where: { email: String(email) },
