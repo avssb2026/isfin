@@ -27,10 +27,21 @@ export function ChatWidget() {
     void (async () => {
       const res = await fetch("/api/chat/messages", { credentials: "include" });
       if (!res.ok) return;
-      const data = (await res.json()) as { sessionId: string | null };
+      const data = (await res.json()) as {
+        sessionId: string | null;
+        messages: Msg[];
+      };
       if (data.sessionId) {
         setSessionId(data.sessionId);
         setStep("chat");
+        if (data.messages?.length) {
+          setMessages(
+            [...data.messages].sort(
+              (a, b) =>
+                new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+            ),
+          );
+        }
       }
     })();
   }, [open]);
