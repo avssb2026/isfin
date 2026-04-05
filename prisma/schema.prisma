@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OPERATOR
+  ADMIN
+}
+
+enum LeadStatus {
+  NEW
+  IN_PROGRESS
+  CLOSED
+}
+
+enum ChatSessionStatus {
+  OPEN
+  CLOSED
+}
+
+enum SenderRole {
+  VISITOR
+  OPERATOR
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  name           String
+  passwordHash   String
+  role           Role          @default(OPERATOR)
+  createdAt      DateTime      @default(now())
+  activityLogs   ActivityLog[]
+  assignedChats  ChatSession[] @relation("AssignedOperator")
+  chatMessages   ChatMessage[]
+}
+
+model Lead {
+  id           String        @id @default(cuid())
+  lastName     String
+  firstName    String
+  phone        String
+  source       String        @default("product")
+  status       LeadStatus    @default(NEW)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  activityLogs ActivityLog[]
+  chatSessions ChatSession[]
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  leadId     String
+  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  operatorId String?
+  operator   User?    @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+  type       String
+  note       String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([leadId])
+}
+
+model ChatSession {
+  id                 String            @id @default(cuid())
+  visitorName        String
+  visitorPhone       String
+  status             ChatSessionStatus @default(OPEN)
+  leadId             String?
+  lead               Lead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  assignedOperatorId String?
+  assignedOperator   User?             @relation("AssignedOperator", fields: [assignedOperatorId], references: [id], onDelete: SetNull)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  messages           ChatMessage[]
+
+  @@index([status])
+}
+
+model ChatMessage {
+  id          String      @id @default(cuid())
+  sessionId   String
+  session     ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  body        String      @db.Text
+  senderRole  SenderRole
+  operatorId  String?
+  operator    User?       @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime    @default(now())
+
+  @@index([sessionId, createdAt])
+}
