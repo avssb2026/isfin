@@ -1,7 +1,6 @@
 /**
- * На Vercel нельзя использовать localhost как БД. Иногда в окружение попадает
- * локальная строка из .env или заданы только переменные Prisma Postgres.
- * Выставляем DATABASE_URL до импорта PrismaClient.
+ * Prisma в schema.prisma читает env("isfin_db_DATABASE_URL").
+ * При необходимости подставляем из isfin_db_PRISMA_DATABASE_URL / isfin_db_POSTGRES_URL.
  */
 function isLocalhostDbUrl(url: string): boolean {
   try {
@@ -12,19 +11,24 @@ function isLocalhostDbUrl(url: string): boolean {
   }
 }
 
-export function applyVercelDatabaseUrl(): void {
-  if (process.env.VERCEL !== "1") return;
+export function applyDatabaseUrlFromProjectEnv(): void {
+  const fromIsfin =
+    process.env.isfin_db_PRISMA_DATABASE_URL ||
+    process.env.isfin_db_POSTGRES_URL;
 
-  const fromPrisma =
-    process.env.PRISMA_POSTGRES_PRISMA_DATABASE_URL ||
-    process.env.PRISMA_POSTGRES_POSTGRES_URL;
+  if (fromIsfin) {
+    process.env.isfin_db_DATABASE_URL = fromIsfin;
+    return;
+  }
 
-  const current = (process.env.DATABASE_URL ?? "").trim();
-  const needCloud = !current || isLocalhostDbUrl(current);
-
-  if (fromPrisma && needCloud) {
-    process.env.DATABASE_URL = fromPrisma;
+  if (process.env.VERCEL === "1") {
+    const current = (process.env.isfin_db_DATABASE_URL ?? "").trim();
+    if (current && isLocalhostDbUrl(current)) {
+      console.error(
+        "[isfin] На Vercel в isfin_db_DATABASE_URL попал localhost. Задайте isfin_db_PRISMA_DATABASE_URL или isfin_db_POSTGRES_URL.",
+      );
+    }
   }
 }
 
-applyVercelDatabaseUrl();
+applyDatabaseUrlFromProjectEnv();

@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      isfin_db_DATABASE_URL: ${{ secrets.ISFIN_DB_DATABASE_URL || secrets.ISFIN_DB_PRISMA_DATABASE_URL || 'postgresql://ci:ci@unused.invalid:5432/ci?schema=public' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -33,5 +35,3 @@ jobs:
         run: npm run build
         env:
           AUTH_SECRET: ci-build-placeholder-secret-min-32-chars-long
-          # Prisma generate / next build не открывают TCP к БД; при отсутствии Secret — заглушка URL.
-          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://ci:ci@unused.invalid:5432/ci?schema=public' }}

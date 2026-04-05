@@ -12,7 +12,7 @@
 ## Требования
 
 - Node.js 20+
-- База **PostgreSQL** в облаке (рекомендуется **[Prisma Postgres](https://www.prisma.io/docs/postgres)**): создайте инстанс и скопируйте строку подключения в `DATABASE_URL`.
+- База **PostgreSQL** в облаке (рекомендуется **[Prisma Postgres](https://www.prisma.io/docs/postgres)**): основная переменная **`isfin_db_DATABASE_URL`**, дополнительно **`isfin_db_PRISMA_DATABASE_URL`** / **`isfin_db_POSTGRES_URL`** (см. `.env.example`).
 
 ## Быстрый старт
 
@@ -22,7 +22,7 @@
    cp .env.example .env
    ```
 
-   Укажите **`DATABASE_URL`** на ваш Prisma Postgres (или другой управляемый PostgreSQL), сгенерируйте **`AUTH_SECRET`** (например `openssl rand -base64 32`), задайте **`AUTH_URL`** и **`NEXT_PUBLIC_APP_URL`** (локально обычно `http://localhost:3000`).
+   Заполните **`isfin_db_DATABASE_URL`** (и при необходимости **`isfin_db_PRISMA_DATABASE_URL`** / **`isfin_db_POSTGRES_URL`** из Prisma Console), сгенерируйте **`AUTH_SECRET`**, задайте **`AUTH_URL`** и **`NEXT_PUBLIC_APP_URL`** (локально обычно `http://localhost:3000`).
 
 2. Установите зависимости и примените миграции:
 
@@ -70,14 +70,15 @@ git push -u origin main
 
 ### Vercel (обязательно)
 
-1. **Project → Settings → Environment Variables** — добавьте для **Production** (и при необходимости Preview):
-   - **`DATABASE_URL`** — полная строка Prisma Postgres (как в `.env`), с `sslmode=require`.
-   - **`AUTH_SECRET`**, **`AUTH_URL`** (URL сайта, например `https://ваш-проект.vercel.app`), **`NEXT_PUBLIC_APP_URL`** (тот же публичный URL).
-2. После первого подключения БД выполните миграции к облачной базе (один раз):  
-   `DATABASE_URL="…из Vercel…" npx prisma migrate deploy`
-3. Сделайте **Redeploy** проекта, чтобы подтянулись переменные.
+1. **Project → Settings → Environment Variables** — для **Production** (и при необходимости Preview):
+   - **`isfin_db_DATABASE_URL`** — основная строка Prisma Postgres (`sslmode=require`).
+   - **`isfin_db_PRISMA_DATABASE_URL`** и **`isfin_db_POSTGRES_URL`** — при необходимости; приложение может подставить их в **`isfin_db_DATABASE_URL`**.
+   - **`AUTH_SECRET`**, **`AUTH_URL`**, **`NEXT_PUBLIC_APP_URL`** (публичный URL сайта на Vercel).
+2. Миграции к облачной БД (один раз):  
+   `isfin_db_DATABASE_URL="…та же строка…" npx prisma migrate deploy`
+3. **Redeploy** проекта.
 
-Без **`DATABASE_URL`** на Vercel API с БД (заявки, калькулятор из БД) не работают — формы вернут ошибку или запасные значения.
+Без строк подключения к БД на Vercel API с данными не работают.
 
 ## Безопасность
 

@@ -43,7 +43,7 @@ description: >-
 
 ### Деплой / окружение
 
-- Нужны как минимум: `DATABASE_URL` (облачный PostgreSQL, в проекте — Prisma Postgres), `AUTH_SECRET`, `AUTH_URL` / публичный URL приложения, переменные `NEXT_PUBLIC_*` для калькулятора.
+- Нужны как минимум: `isfin_db_DATABASE_URL` (и при необходимости `isfin_db_PRISMA_DATABASE_URL` / `isfin_db_POSTGRES_URL`), `AUTH_SECRET`, `AUTH_URL` / публичный URL приложения, переменные `NEXT_PUBLIC_*` для калькулятора.
 - После деплоя: `prisma migrate deploy`, при необходимости `prisma db seed`.
 
 ### Терминология в UI
