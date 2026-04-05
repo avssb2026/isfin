@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/require-admin";
 import { bankSettingsPatchSchema } from "@/lib/validations";
 
 export async function GET() {
@@ -23,8 +24,9 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Не авторизован" }, { status: 401 });
+  const gate = requireAdmin(session);
+  if (!gate.ok) {
+    return NextResponse.json(gate.response, { status: gate.status });
   }
 
   let body: unknown;

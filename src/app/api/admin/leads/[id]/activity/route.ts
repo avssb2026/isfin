@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { canModifyLeadAsOperator } from "@/lib/lead-access";
 import { activityNoteSchema } from "@/lib/validations";
 
 export async function POST(
@@ -28,6 +29,10 @@ export async function POST(
   const lead = await prisma.lead.findUnique({ where: { id: leadId } });
   if (!lead) {
     return NextResponse.json({ error: "Лид не найден" }, { status: 404 });
+  }
+
+  if (!canModifyLeadAsOperator(session, lead)) {
+    return NextResponse.json({ error: "Недостаточно прав" }, { status: 403 });
   }
 
   const log = await prisma.activityLog.create({

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { operatorFullName } from "@/lib/operator-name";
+import { canAccessChatSession } from "@/lib/lead-access";
 import { chatMessageSchema } from "@/lib/validations";
 import { rateLimit } from "@/lib/rate-limit";
 import { getClientId } from "@/lib/client-id";
@@ -27,6 +28,10 @@ export async function GET(
 
   if (!chat) {
     return NextResponse.json({ error: "Не найдено" }, { status: 404 });
+  }
+
+  if (!canAccessChatSession(session, chat)) {
+    return NextResponse.json({ error: "Недостаточно прав" }, { status: 403 });
   }
 
   const messages = chat.messages.map((m) => ({
@@ -72,6 +77,10 @@ export async function POST(
   const chat = await prisma.chatSession.findUnique({ where: { id: sessionId } });
   if (!chat || chat.status !== "OPEN") {
     return NextResponse.json({ error: "Чат недоступен" }, { status: 400 });
+  }
+
+  if (!canAccessChatSession(authSession, chat)) {
+    return NextResponse.json({ error: "Недостаточно прав" }, { status: 403 });
   }
 
   let body: unknown;

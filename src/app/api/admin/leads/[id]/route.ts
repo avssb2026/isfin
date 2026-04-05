@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { operatorFullName } from "@/lib/operator-name";
+import { canModifyLeadAsOperator, canReadLeadDetail } from "@/lib/lead-access";
 import { leadPatchSchema } from "@/lib/validations";
 
 export async function GET(
@@ -27,6 +28,10 @@ export async function GET(
 
   if (!lead) {
     return NextResponse.json({ error: "Не найдено" }, { status: 404 });
+  }
+
+  if (!canReadLeadDetail(session, lead)) {
+    return NextResponse.json({ error: "Недостаточно прав" }, { status: 403 });
   }
 
   const assigned = lead.assignedOperator
@@ -91,7 +96,24 @@ export async function PATCH(
     return NextResponse.json({ error: "Не найдено" }, { status: 404 });
   }
 
+  if (!canModifyLeadAsOperator(session, before)) {
+    return NextResponse.json({ error: "Недостаточно прав" }, { status: 403 });
+  }
+
   const { status: newStatus, assignedOperatorId: newOpId } = parsed.data;
+
+  const isAdmin = session.user.role === "ADMIN";
+  if (!isAdmin) {
+    if (newOpId !== undefined) {
+      if (newOpId !== null && newOpId !== session.user.id) {
+        return NextResponse.json(
+          { error: "Назначать других операторов может только администратор" },
+          { status: 403 },
+        );
+      }
+    }
+  }
+
 
   const lead = await prisma.lead.update({
     where: { id },
