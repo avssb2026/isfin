@@ -29,7 +29,7 @@ export function PublicHeader() {
             Условия
           </Link>
           <Link
-            href="/product"
+            href="/product#lead-form"
             className="rounded-full bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-[var(--accent)]/20 transition hover:bg-[var(--accent-hover)]"
           >
             Оформить заявку

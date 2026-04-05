@@ -9,11 +9,14 @@ const vercelOrigin =
 const nextAuthPublicUrl =
   process.env.NEXTAUTH_URL ?? process.env.AUTH_URL ?? vercelOrigin ?? "";
 
+const buildTimeIso = new Date().toISOString();
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   env: {
     NEXTAUTH_URL: nextAuthPublicUrl,
+    NEXT_PUBLIC_BUILD_TIME: buildTimeIso,
   },
   async headers() {
     return [

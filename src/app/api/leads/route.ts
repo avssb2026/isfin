@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { applyFormCaptchaGate } from "@/lib/apply-form-captcha-gate";
 import { rateLimit } from "@/lib/rate-limit";
 import { getClientId } from "@/lib/client-id";
 import { leadApplicationSchema } from "@/lib/validations";
@@ -7,7 +8,8 @@ import { leadApplicationSchema } from "@/lib/validations";
 const MAX_PER_MINUTE = 10;
 
 export async function POST(req: Request) {
-  const key = `lead:${getClientId(req)}`;
+  const clientIp = getClientId(req);
+  const key = `lead:${clientIp}`;
   const limited = rateLimit(key, MAX_PER_MINUTE);
   if (!limited.ok) {
     return NextResponse.json(
@@ -23,7 +25,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Некорректное тело запроса" }, { status: 400 });
   }
 
-  const parsed = leadApplicationSchema.safeParse(body);
+  const obj =
+    body && typeof body === "object" && !Array.isArray(body)
+      ? (body as Record<string, unknown>)
+      : {};
+  const gate = applyFormCaptchaGate("lead", clientIp, obj);
+  if (!gate.ok) {
+    return gate.response;
+  }
+
+  const rest = { ...obj };
+  delete rest.captchaToken;
+  delete rest.captchaAnswer;
+  const parsed = leadApplicationSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Ошибка валидации", details: parsed.error.flatten() },

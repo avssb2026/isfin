@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { applyFormCaptchaGate } from "@/lib/apply-form-captcha-gate";
 import { rateLimit } from "@/lib/rate-limit";
 import { getClientId } from "@/lib/client-id";
 import { chatPreSchema } from "@/lib/validations";
@@ -10,7 +11,8 @@ const COOKIE = "visitor_chat_session_id";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 
 export async function POST(req: Request) {
-  const key = `chat_session:${getClientId(req)}`;
+  const clientIp = getClientId(req);
+  const key = `chat_session:${clientIp}`;
   const limited = rateLimit(key, MAX_PER_MINUTE);
   if (!limited.ok) {
     return NextResponse.json(
@@ -26,7 +28,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Некорректное тело запроса" }, { status: 400 });
   }
 
-  const parsed = chatPreSchema.safeParse(body);
+  const obj =
+    body && typeof body === "object" && !Array.isArray(body)
+      ? (body as Record<string, unknown>)
+      : {};
+  const gate = applyFormCaptchaGate("chat_pre", clientIp, obj);
+  if (!gate.ok) {
+    return gate.response;
+  }
+
+  const rest = { ...obj };
+  delete rest.captchaToken;
+  delete rest.captchaAnswer;
+  const parsed = chatPreSchema.safeParse(rest);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Ошибка валидации", details: parsed.error.flatten() },

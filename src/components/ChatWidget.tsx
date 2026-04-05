@@ -19,6 +19,8 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [draft, setDraft] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [captcha, setCaptcha] = useState<{ token: string; question: string } | null>(null);
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const lastAfterRef = useRef<string | null>(null);
 
@@ -92,21 +94,41 @@ export function ChatWidget() {
     setError(null);
     setLoading(true);
     try {
+      const payload: Record<string, string> = {
+        visitorName: name.trim(),
+        visitorPhone: phone.trim(),
+      };
+      if (captcha) {
+        payload.captchaToken = captcha.token;
+        payload.captchaAnswer = captchaAnswer;
+      }
       const res = await fetch("/api/chat/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ visitorName: name.trim(), visitorPhone: phone.trim() }),
+        body: JSON.stringify(payload),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setError((data as { error?: string }).error ?? "Ошибка");
+      const data = (await res.json()) as {
+        error?: string;
+        sessionId?: string;
+        captchaRequired?: boolean;
+        captcha?: { token: string; question: string };
+      };
+      if (res.status === 400 && data.captchaRequired && data.captcha) {
+        setCaptcha(data.captcha);
+        setError(data.error ?? "Введите ответ на пример.");
         return;
       }
-      setSessionId((data as { sessionId?: string }).sessionId ?? null);
+      if (!res.ok) {
+        setError(data.error ?? "Ошибка");
+        return;
+      }
+      setSessionId(data.sessionId ?? null);
       setStep("chat");
       setMessages([]);
       lastAfterRef.current = null;
+      setCaptcha(null);
+      setCaptchaAnswer("");
     } finally {
       setLoading(false);
     }
@@ -118,19 +140,36 @@ export function ChatWidget() {
     setError(null);
     setLoading(true);
     try {
+      const payload: Record<string, string> = { body: draft.trim() };
+      if (captcha) {
+        payload.captchaToken = captcha.token;
+        payload.captchaAnswer = captchaAnswer;
+      }
       const res = await fetch("/api/chat/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ body: draft.trim() }),
+        body: JSON.stringify(payload),
       });
-      const data = await res.json();
+      const data = (await res.json()) as {
+        error?: string;
+        message?: Msg;
+        captchaRequired?: boolean;
+        captcha?: { token: string; question: string };
+      };
+      if (res.status === 400 && data.captchaRequired && data.captcha) {
+        setCaptcha(data.captcha);
+        setError(data.error ?? "Введите ответ на пример.");
+        return;
+      }
       if (!res.ok) {
-        setError((data as { error?: string }).error ?? "Ошибка отправки");
+        setError(data.error ?? "Ошибка отправки");
         return;
       }
       setDraft("");
-      const msg = (data as { message?: Msg }).message;
+      setCaptcha(null);
+      setCaptchaAnswer("");
+      const msg = data.message;
       if (msg) setMessages((prev) => [...prev, msg]);
     } finally {
       setLoading(false);
@@ -192,6 +231,21 @@ export function ChatWidget() {
                 />
               </label>
               {error && <p className="text-sm text-red-600">{error}</p>}
+              {captcha && (
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--bg)] p-3 text-sm">
+                  <p className="text-[var(--text)]">
+                    Проверка: <span className="font-mono">{captcha.question}</span> = ?
+                  </p>
+                  <input
+                    className="input-modern mt-2 w-full"
+                    value={captchaAnswer}
+                    onChange={(e) => setCaptchaAnswer(e.target.value)}
+                    inputMode="numeric"
+                    autoComplete="off"
+                    placeholder="Ответ"
+                  />
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={loading}
@@ -224,6 +278,21 @@ export function ChatWidget() {
               </div>
               <form onSubmit={sendMessage} className="border-t border-[var(--border)] p-3">
                 {error && <p className="mb-2 text-xs text-red-600">{error}</p>}
+                {captcha && (
+                  <div className="mb-2 rounded-lg border border-[var(--border)] bg-[var(--bg)] p-2 text-xs">
+                    <p className="text-[var(--text)]">
+                      Проверка: <span className="font-mono">{captcha.question}</span> = ?
+                    </p>
+                    <input
+                      className="input-modern mt-1 w-full text-sm"
+                      value={captchaAnswer}
+                      onChange={(e) => setCaptchaAnswer(e.target.value)}
+                      inputMode="numeric"
+                      autoComplete="off"
+                      placeholder="Ответ"
+                    />
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <input
                     className="input-modern flex-1"

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MurabahaCalculator } from "@/components/MurabahaCalculator";
 import { PublicFooter } from "@/components/PublicFooter";
 import { PublicHeader } from "@/components/PublicHeader";
@@ -17,22 +17,41 @@ export default function ProductPage() {
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [msg, setMsg] = useState<string | null>(null);
+  const [captcha, setCaptcha] = useState<{ token: string; question: string } | null>(null);
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash !== "#lead-form") return;
+    requestAnimationFrame(() => {
+      document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
     setMsg(null);
     try {
+      const payload: Record<string, string> = { lastName, firstName, phone };
+      if (captcha) {
+        payload.captchaToken = captcha.token;
+        payload.captchaAnswer = captchaAnswer;
+      }
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lastName, firstName, phone }),
+        body: JSON.stringify(payload),
       });
       const raw = await res.text();
-      let data: { error?: string } = {};
+      let data: {
+        error?: string;
+        captchaRequired?: boolean;
+        captcha?: { token: string; question: string };
+      } = {};
       if (raw) {
         try {
-          data = JSON.parse(raw) as { error?: string };
+          data = JSON.parse(raw) as typeof data;
         } catch {
           setStatus("err");
           setMsg(
@@ -42,6 +61,12 @@ export default function ProductPage() {
           );
           return;
         }
+      }
+      if (res.status === 400 && data.captchaRequired && data.captcha) {
+        setCaptcha(data.captcha);
+        setStatus("err");
+        setMsg(data.error ?? "Введите ответ на пример.");
+        return;
       }
       if (!res.ok) {
         setStatus("err");
@@ -53,6 +78,8 @@ export default function ProductPage() {
       setLastName("");
       setFirstName("");
       setPhone("");
+      setCaptcha(null);
+      setCaptchaAnswer("");
     } catch {
       setStatus("err");
       setMsg("Не удалось связаться с сервером. Проверьте интернет и попробуйте снова.");
@@ -113,7 +140,10 @@ export default function ProductPage() {
           </div>
         </section>
 
-        <section className="mt-14 rounded-[var(--radius-2xl)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] sm:p-10">
+        <section
+          id="lead-form"
+          className="mt-14 scroll-mt-28 rounded-[var(--radius-2xl)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] sm:p-10"
+        >
           <h2 className="text-xl font-bold text-[var(--text)] sm:text-2xl">Заявка на оформление</h2>
           <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">
             Данные попадают в CRM банка. Голосовой ввод работает в поддерживаемых браузерах (кнопка у
@@ -160,6 +190,22 @@ export default function ProductPage() {
               >
                 {msg}
               </p>
+            )}
+            {captcha && (
+              <div className="sm:col-span-2 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4">
+                <p className="text-sm font-medium text-[var(--text)]">
+                  Проверка: сколько будет{" "}
+                  <span className="whitespace-nowrap font-mono">{captcha.question}</span>?
+                </p>
+                <input
+                  className="input-modern mt-3 max-w-xs"
+                  value={captchaAnswer}
+                  onChange={(e) => setCaptchaAnswer(e.target.value)}
+                  inputMode="numeric"
+                  autoComplete="off"
+                  placeholder="Ответ числом"
+                />
+              </div>
             )}
             <div className="sm:col-span-2">
               <button

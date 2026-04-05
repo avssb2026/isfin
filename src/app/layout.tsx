@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
+import { BuildVersionFooter } from "@/components/BuildVersionFooter";
 import { ConditionalChatWidget } from "@/components/ConditionalChatWidget";
 
 const inter = Inter({
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen antialiased`}>
         <Providers>{children}</Providers>
         <ConditionalChatWidget />
+        <BuildVersionFooter />
         <SpeedInsights />
       </body>
     </html>
