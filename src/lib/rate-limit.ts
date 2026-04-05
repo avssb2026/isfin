@@ -31,3 +31,8 @@ export function sweepExpired(now: number = Date.now()): void {
     if (now >= v.resetAt) store.delete(k);
   }
 }
+
+/** Сброс in-memory счётчиков (тесты, локальная отладка) */
+export function clearRateLimitStore(): void {
+  store.clear();
+}

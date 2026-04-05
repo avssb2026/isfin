@@ -9,6 +9,8 @@
     "lint": "eslint",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,json}\"",
     "test": "vitest run",
+    "test:watch": "vitest",
+    "test:tdd": "vitest",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
