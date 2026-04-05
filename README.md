@@ -66,9 +66,18 @@ git push -u origin main
 
 ## Деплой
 
-Подходит **Vercel**, **Netlify** (с адаптером Next), **Railway**. Задайте на хостинге те же переменные, что в `.env.example`, в том числе **`DATABASE_URL`** (тот же Prisma Postgres или другой облачный PostgreSQL).
+Подходит **Vercel**, **Netlify** (с адаптером Next), **Railway**. Секреты храните только в настройках окружения платформы, не коммитьте `.env`.
 
-Секреты храните только в настройках окружения платформы, не коммитьте `.env`.
+### Vercel (обязательно)
+
+1. **Project → Settings → Environment Variables** — добавьте для **Production** (и при необходимости Preview):
+   - **`DATABASE_URL`** — полная строка Prisma Postgres (как в `.env`), с `sslmode=require`.
+   - **`AUTH_SECRET`**, **`AUTH_URL`** (URL сайта, например `https://ваш-проект.vercel.app`), **`NEXT_PUBLIC_APP_URL`** (тот же публичный URL).
+2. После первого подключения БД выполните миграции к облачной базе (один раз):  
+   `DATABASE_URL="…из Vercel…" npx prisma migrate deploy`
+3. Сделайте **Redeploy** проекта, чтобы подтянулись переменные.
+
+Без **`DATABASE_URL`** на Vercel API с БД (заявки, калькулятор из БД) не работают — формы вернут ошибку или запасные значения.
 
 ## Безопасность
 

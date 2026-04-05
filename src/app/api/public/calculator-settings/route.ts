@@ -7,11 +7,16 @@ const FALLBACK_PERCENT = Number(
 
 /** Публичный параметр калькулятора (без авторизации) */
 export async function GET() {
-  const row = await prisma.bankSettings.findUnique({
-    where: { id: "global" },
-  });
+  try {
+    const row = await prisma.bankSettings.findUnique({
+      where: { id: "global" },
+    });
 
-  const annualSchedulePercent = row?.annualSchedulePercent ?? FALLBACK_PERCENT;
+    const annualSchedulePercent = row?.annualSchedulePercent ?? FALLBACK_PERCENT;
 
-  return NextResponse.json({ annualSchedulePercent });
+    return NextResponse.json({ annualSchedulePercent });
+  } catch (err) {
+    console.error("GET /api/public/calculator-settings", err);
+    return NextResponse.json({ annualSchedulePercent: FALLBACK_PERCENT }, { status: 200 });
+  }
 }
