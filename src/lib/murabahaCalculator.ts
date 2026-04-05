@@ -3,6 +3,10 @@
  * математически сопоставимая с классической ипотекой при той же ключевой ставке.
  */
 
+/** Диапазон срока рассрочки в публичном калькуляторе (месяцы). */
+export const MURABAHA_TERM_MONTHS_MIN = 12;
+export const MURABAHA_TERM_MONTHS_MAX = 240;
+
 export type MurabahaInput = {
   propertyPrice: number;
   downPayment: number;

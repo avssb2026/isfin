@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   calculateMurabahaSchedule,
+  MURABAHA_TERM_MONTHS_MAX,
+  MURABAHA_TERM_MONTHS_MIN,
   percentToUnit,
 } from "@/lib/murabahaCalculator";
 
@@ -89,9 +91,7 @@ export function MurabahaCalculator({ compact }: Props) {
         Калькулятор отсроченной цены (Мурабаха)
       </h3>
       <p className="mt-2 text-sm text-[var(--muted)]">
-        Расчёт ежемесячного взноса по согласованной с банком отсроченной цене. Параметры подобраны
-        так, чтобы соответствовать классической ипотечной модели при той же ключевой ставке (без
-        отображения процентов и пеней в интерфейсе).
+        Расчёт ежемесячного взноса по согласованной с банком отсроченной цене.
       </p>
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
@@ -142,11 +142,20 @@ export function MurabahaCalculator({ compact }: Props) {
           <span className="text-[var(--muted)]">Срок рассрочки, мес.</span>
           <input
             type="number"
-            min={12}
-            max={360}
+            min={MURABAHA_TERM_MONTHS_MIN}
+            max={MURABAHA_TERM_MONTHS_MAX}
             className="max-w-xs rounded-lg border border-[var(--border)] px-3 py-2"
             value={months}
-            onChange={(e) => setMonths(Number(e.target.value))}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              if (Number.isNaN(v)) return;
+              setMonths(
+                Math.min(
+                  MURABAHA_TERM_MONTHS_MAX,
+                  Math.max(MURABAHA_TERM_MONTHS_MIN, Math.round(v)),
+                ),
+              );
+            }}
           />
         </label>
 

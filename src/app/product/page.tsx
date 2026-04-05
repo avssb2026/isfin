@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { MurabahaCalculator } from "@/components/MurabahaCalculator";
+import {
+  MURABAHA_TERM_MONTHS_MAX,
+  MURABAHA_TERM_MONTHS_MIN,
+} from "@/lib/murabahaCalculator";
 import { VoiceField } from "@/components/VoiceField";
 
 export default function ProductPage() {
@@ -55,7 +59,7 @@ export default function ProductPage() {
       <p className="mt-3 max-w-3xl text-[var(--muted)]">
         Продукт предназначен для приобретения готового жилья или на этапе строительства в
         соответствии с шариатским подходом: фиксируется цена банка, отсроченная цена для вас и
-        график взносов. Ниже — ориентировочный калькулятор и форма заявки в CRM банка.
+        график взносов. Рассчитайте рассрочку на калькуляторе и подайте заявку на консультацию и оформление.
       </p>
 
       <section className="mt-10">
@@ -68,7 +72,11 @@ export default function ProductPage() {
           <ul className="list-inside list-disc space-y-2">
             <li>Объект: жилое помещение на территории РФ, соответствующее требованиям банка.</li>
             <li>Первоначальный взнос: размер определяется политикой банка и профилем сделки.</li>
-            <li>Срок рассрочки: до 30 лет в зависимости от программы и скоринга.</li>
+            <li>
+              Срок рассрочки: в калькуляторе на странице — от {MURABAHA_TERM_MONTHS_MIN} до{" "}
+              {MURABAHA_TERM_MONTHS_MAX} мес.; итоговый срок по договору зависит от программы и
+              скоринга.
+            </li>
             <li>
               Отсроченная цена включает маржу банка; расчётный годовой параметр согласуется с
               ключевой ставкой для сопоставимости с рыночной ипотекой.
