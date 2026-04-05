@@ -14,6 +14,8 @@ function serializeOperator(o: {
   email: string;
   role: string;
   createdAt: Date;
+  lastLogin: Date | null;
+  lastActivity: Date | null;
 }) {
   return {
     id: o.id,
@@ -24,6 +26,8 @@ function serializeOperator(o: {
     email: o.email,
     role: o.role,
     createdAt: o.createdAt.toISOString(),
+    lastLogin: o.lastLogin ? o.lastLogin.toISOString() : null,
+    lastActivity: o.lastActivity ? o.lastActivity.toISOString() : null,
   };
 }
 
@@ -44,6 +48,8 @@ export async function GET() {
       email: true,
       role: true,
       createdAt: true,
+      lastLogin: true,
+      lastActivity: true,
     },
   });
 
@@ -93,6 +99,8 @@ export async function POST(req: Request) {
         email: true,
         role: true,
         createdAt: true,
+        lastLogin: true,
+        lastActivity: true,
       },
     });
     return NextResponse.json({ operator: serializeOperator(created) });

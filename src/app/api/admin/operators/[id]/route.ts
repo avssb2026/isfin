@@ -14,6 +14,8 @@ function serializeOperator(o: {
   email: string;
   role: string;
   createdAt: Date;
+  lastLogin: Date | null;
+  lastActivity: Date | null;
 }) {
   return {
     id: o.id,
@@ -24,6 +26,8 @@ function serializeOperator(o: {
     email: o.email,
     role: o.role,
     createdAt: o.createdAt.toISOString(),
+    lastLogin: o.lastLogin ? o.lastLogin.toISOString() : null,
+    lastActivity: o.lastActivity ? o.lastActivity.toISOString() : null,
   };
 }
 
@@ -85,6 +89,8 @@ export async function PATCH(
         email: true,
         role: true,
         createdAt: true,
+        lastLogin: true,
+        lastActivity: true,
       },
     });
     return NextResponse.json({ operator: serializeOperator(updated) });

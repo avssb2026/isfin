@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
 import { operatorFullName } from "@/lib/operator-name";
+import { touchOperatorActivityIfStale } from "@/lib/touch-operator-activity";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
@@ -26,6 +27,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const ok = await argon2.verify(user.passwordHash, String(password));
         if (!ok) return null;
 
+        const now = new Date();
+        await prisma.bankOperator.update({
+          where: { id: user.id },
+          data: { lastLogin: now, lastActivity: now },
+        });
+
         return {
           id: user.id,
           email: user.email,
@@ -48,6 +55,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        const id = token.id as string | undefined;
+        if (id) {
+          void touchOperatorActivityIfStale(id);
+        }
       }
       return session;
     },

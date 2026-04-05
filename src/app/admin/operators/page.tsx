@@ -12,7 +12,14 @@ type OperatorRow = {
   email: string;
   role: string;
   createdAt: string;
+  lastLogin: string | null;
+  lastActivity: string | null;
 };
+
+function formatOperatorDate(iso: string | null): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("ru-RU");
+}
 
 const emptyCreate = {
   lastName: "",
@@ -154,7 +161,8 @@ export default function AdminOperatorsPage() {
       <h1 className="text-2xl font-semibold text-[var(--text)]">Операторы банка</h1>
       <p className="mt-2 text-sm text-[var(--muted)]">
         Учётные записи для входа в бэк-офис. Пароль хранится в виде хэша (argon2). Редактирование и
-        удаление доступны только роли ADMIN.
+        удаление доступны только роли ADMIN. Колонки «Последний вход» и «Активность» заполняются
+        автоматически (успешный логин и работа в бэк-офисе, не чаще чем раз в 5 минут).
       </p>
       {session?.user?.email && (
         <p className="mt-1 text-xs text-[var(--muted)]">Вы вошли как {session.user.email}</p>
@@ -255,6 +263,8 @@ export default function AdminOperatorsPage() {
                   <th className="px-4 py-3 font-medium">ФИО</th>
                   <th className="px-4 py-3 font-medium">Email</th>
                   <th className="px-4 py-3 font-medium">Роль</th>
+                  <th className="px-4 py-3 font-medium whitespace-nowrap">Последний вход</th>
+                  <th className="px-4 py-3 font-medium whitespace-nowrap">Активность</th>
                   <th className="px-4 py-3 font-medium"></th>
                 </tr>
               </thead>
@@ -264,6 +274,12 @@ export default function AdminOperatorsPage() {
                     <td className="px-4 py-3">{o.fullName}</td>
                     <td className="px-4 py-3">{o.email}</td>
                     <td className="px-4 py-3">{o.role}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-[var(--muted)]">
+                      {formatOperatorDate(o.lastLogin)}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-[var(--muted)]">
+                      {formatOperatorDate(o.lastActivity)}
+                    </td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <button
                         type="button"

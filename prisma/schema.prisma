@@ -46,6 +46,8 @@ model BankOperator {
   passwordHash   String
   role           Role          @default(OPERATOR)
   createdAt      DateTime      @default(now())
+  lastLogin      DateTime?     @map("LAST_LOGIN")
+  lastActivity   DateTime?     @map("LAST_ACTIVITY")
   activityLogs   ActivityLog[]
   assignedChats  ChatSession[] @relation("AssignedOperator")
   assignedLeads  Lead[]        @relation("LeadAssignedOperator")
