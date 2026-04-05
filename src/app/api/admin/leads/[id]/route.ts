@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { operatorFullName } from "@/lib/operator-name";
 import { leadPatchSchema } from "@/lib/validations";
 
 export async function GET(
@@ -16,7 +17,9 @@ export async function GET(
   const lead = await prisma.lead.findUnique({
     where: { id },
     include: {
-      assignedOperator: { select: { id: true, name: true, email: true } },
+      assignedOperator: {
+        select: { id: true, lastName: true, firstName: true, patronymic: true, email: true },
+      },
       activityLogs: { orderBy: { createdAt: "desc" }, include: { operator: true } },
       chatSessions: { orderBy: { createdAt: "desc" }, take: 5 },
     },
@@ -26,7 +29,30 @@ export async function GET(
     return NextResponse.json({ error: "Не найдено" }, { status: 404 });
   }
 
-  return NextResponse.json({ lead });
+  const assigned = lead.assignedOperator
+    ? {
+        id: lead.assignedOperator.id,
+        email: lead.assignedOperator.email,
+        fullName: operatorFullName(lead.assignedOperator),
+      }
+    : null;
+
+  return NextResponse.json({
+    lead: {
+      ...lead,
+      assignedOperator: assigned,
+      activityLogs: lead.activityLogs.map((a) => ({
+        ...a,
+        operator: a.operator
+          ? {
+              id: a.operator.id,
+              email: a.operator.email,
+              fullName: operatorFullName(a.operator),
+            }
+          : null,
+      })),
+    },
+  });
 }
 
 export async function PATCH(
@@ -56,7 +82,9 @@ export async function PATCH(
     select: {
       status: true,
       assignedOperatorId: true,
-      assignedOperator: { select: { name: true } },
+      assignedOperator: {
+        select: { lastName: true, firstName: true, patronymic: true },
+      },
     },
   });
   if (!before) {
@@ -71,7 +99,11 @@ export async function PATCH(
       ...(newStatus !== undefined && { status: newStatus }),
       ...(newOpId !== undefined && { assignedOperatorId: newOpId }),
     },
-    include: { assignedOperator: { select: { id: true, name: true, email: true } } },
+    include: {
+      assignedOperator: {
+        select: { id: true, lastName: true, firstName: true, patronymic: true, email: true },
+      },
+    },
   });
 
   if (newStatus !== undefined && newStatus !== before.status) {
@@ -89,15 +121,15 @@ export async function PATCH(
     let note: string;
     if (newOpId === null) {
       note = before.assignedOperator
-        ? `Ответственный снят (был: ${before.assignedOperator.name})`
+        ? `Ответственный снят (был: ${operatorFullName(before.assignedOperator)})`
         : "Ответственный снят";
     } else {
-      const op = await prisma.user.findUnique({
+      const op = await prisma.bankOperator.findUnique({
         where: { id: newOpId },
-        select: { name: true },
+        select: { lastName: true, firstName: true, patronymic: true },
       });
       note = op
-        ? `Назначен ответственный: ${op.name}`
+        ? `Назначен ответственный: ${operatorFullName(op)}`
         : "Назначен ответственный";
     }
     await prisma.activityLog.create({
@@ -110,5 +142,15 @@ export async function PATCH(
     });
   }
 
-  return NextResponse.json({ lead });
+  const assignedPatch = lead.assignedOperator
+    ? {
+        id: lead.assignedOperator.id,
+        email: lead.assignedOperator.email,
+        fullName: operatorFullName(lead.assignedOperator),
+      }
+    : null;
+
+  return NextResponse.json({
+    lead: { ...lead, assignedOperator: assignedPatch },
+  });
 }

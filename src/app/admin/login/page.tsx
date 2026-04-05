@@ -4,9 +4,23 @@ import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
 
+function safePostLoginPath(raw: string | null, fallback: string): string {
+  if (!raw) return fallback;
+  if (raw.startsWith("/") && !raw.startsWith("//")) return raw;
+  try {
+    const u = new URL(raw, window.location.origin);
+    if (u.origin === window.location.origin) {
+      return `${u.pathname}${u.search}${u.hash}`;
+    }
+  } catch {
+    /* ignore */
+  }
+  return fallback;
+}
+
 function LoginForm() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/admin/leads";
+  const callbackUrl = safePostLoginPath(searchParams.get("callbackUrl"), "/admin/leads");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);

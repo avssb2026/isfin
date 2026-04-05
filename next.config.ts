@@ -1,8 +1,20 @@
 import type { NextConfig } from "next";
 
+const vercelOrigin =
+  process.env.VERCEL_URL && !process.env.VERCEL_URL.startsWith("http")
+    ? `https://${process.env.VERCEL_URL}`
+    : process.env.VERCEL_URL;
+
+/** NextAuth client (`next-auth/react`) reads `NEXTAUTH_URL`; mirror `AUTH_URL` so signOut/session URLs match the deployed host on Vercel. */
+const nextAuthPublicUrl =
+  process.env.NEXTAUTH_URL ?? process.env.AUTH_URL ?? vercelOrigin ?? "";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  env: {
+    NEXTAUTH_URL: nextAuthPublicUrl,
+  },
   async headers() {
     return [
       {

@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export function AdminNav() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   if (pathname === "/admin/login") return null;
 
   return (
@@ -22,6 +23,11 @@ export function AdminNav() {
           <Link href="/admin/settings" className="text-[var(--accent)] hover:underline">
             Калькулятор
           </Link>
+          {session?.user?.role === "ADMIN" && (
+            <Link href="/admin/operators" className="text-[var(--accent)] hover:underline">
+              Операторы
+            </Link>
+          )}
           <Link href="/" className="text-[var(--muted)] hover:text-[var(--text)]">
             Сайт
           </Link>
@@ -29,7 +35,11 @@ export function AdminNav() {
         <button
           type="button"
           className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-sm hover:bg-[var(--bg)]"
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={() =>
+            signOut({
+              redirectTo: `${window.location.origin}/admin/login`,
+            })
+          }
         >
           Выйти
         </button>

@@ -9,10 +9,10 @@ type Activity = {
   type: string;
   note: string;
   createdAt: string;
-  operator: { name: string; email: string } | null;
+  operator: { fullName: string; email: string } | null;
 };
 
-type OperatorOption = { id: string; name: string; email: string };
+type OperatorOption = { id: string; fullName: string; email: string };
 
 type LeadDetail = {
   id: string;
@@ -146,7 +146,7 @@ export default function LeadDetailPage() {
               <option value="">Не назначен</option>
               {operators.map((op) => (
                 <option key={op.id} value={op.id}>
-                  {op.name} ({op.email})
+                  {op.fullName} ({op.email})
                 </option>
               ))}
             </select>
@@ -170,7 +170,7 @@ export default function LeadDetailPage() {
             >
               <p className="text-[var(--muted)]">
                 {new Date(a.createdAt).toLocaleString("ru-RU")} · {a.type}
-                {a.operator && ` · ${a.operator.name}`}
+                {a.operator && ` · ${a.operator.fullName}`}
               </p>
               <p className="mt-2 whitespace-pre-wrap">{a.note}</p>
             </li>

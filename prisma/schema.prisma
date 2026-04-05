@@ -36,10 +36,13 @@ model BankSettings {
   updatedAt             DateTime @updatedAt
 }
 
-model User {
+/** Операторы банка (бэк-офис): ФИО, email, хэш пароля (argon2) */
+model BankOperator {
   id             String        @id @default(cuid())
+  lastName       String
+  firstName      String
+  patronymic     String?
   email          String        @unique
-  name           String
   passwordHash   String
   role           Role          @default(OPERATOR)
   createdAt      DateTime      @default(now())
@@ -47,6 +50,8 @@ model User {
   assignedChats  ChatSession[] @relation("AssignedOperator")
   assignedLeads  Lead[]        @relation("LeadAssignedOperator")
   chatMessages   ChatMessage[]
+
+  @@map("bank_operators")
 }
 
 model Lead {
@@ -57,7 +62,7 @@ model Lead {
   source               String        @default("product")
   status               LeadStatus    @default(NEW)
   assignedOperatorId   String?
-  assignedOperator     User?         @relation("LeadAssignedOperator", fields: [assignedOperatorId], references: [id], onDelete: SetNull)
+  assignedOperator     BankOperator? @relation("LeadAssignedOperator", fields: [assignedOperatorId], references: [id], onDelete: SetNull)
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
   activityLogs         ActivityLog[]
@@ -67,14 +72,14 @@ model Lead {
 }
 
 model ActivityLog {
-  id         String   @id @default(cuid())
+  id         String         @id @default(cuid())
   leadId     String
-  lead       Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  lead       Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
   operatorId String?
-  operator   User?    @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+  operator   BankOperator?  @relation(fields: [operatorId], references: [id], onDelete: SetNull)
   type       String
-  note       String   @db.Text
-  createdAt  DateTime @default(now())
+  note       String         @db.Text
+  createdAt  DateTime       @default(now())
 
   @@index([leadId])
 }
@@ -87,7 +92,7 @@ model ChatSession {
   leadId             String?
   lead               Lead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
   assignedOperatorId String?
-  assignedOperator   User?             @relation("AssignedOperator", fields: [assignedOperatorId], references: [id], onDelete: SetNull)
+  assignedOperator   BankOperator?     @relation("AssignedOperator", fields: [assignedOperatorId], references: [id], onDelete: SetNull)
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   messages           ChatMessage[]
@@ -96,14 +101,14 @@ model ChatSession {
 }
 
 model ChatMessage {
-  id          String      @id @default(cuid())
+  id          String         @id @default(cuid())
   sessionId   String
-  session     ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  body        String      @db.Text
+  session     ChatSession    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  body        String         @db.Text
   senderRole  SenderRole
   operatorId  String?
-  operator    User?       @relation(fields: [operatorId], references: [id], onDelete: SetNull)
-  createdAt   DateTime    @default(now())
+  operator    BankOperator?  @relation(fields: [operatorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime       @default(now())
 
   @@index([sessionId, createdAt])
 }

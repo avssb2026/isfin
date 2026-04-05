@@ -12,7 +12,7 @@ type LeadRow = {
   status: string;
   source: string;
   createdAt: string;
-  assignedOperator: { id: string; name: string; email: string } | null;
+  assignedOperator: { id: string; fullName: string; email: string } | null;
   _count: { activityLogs: number; chatSessions: number };
 };
 

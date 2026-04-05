@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import argon2 from "argon2";
 import { prisma } from "@/lib/prisma";
+import { operatorFullName } from "@/lib/operator-name";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   trustHost: true,
@@ -17,7 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const password = credentials?.password;
         if (!email || !password) return null;
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.bankOperator.findUnique({
           where: { email: String(email) },
         });
         if (!user) return null;
@@ -28,7 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
+          name: operatorFullName(user),
           role: user.role,
         };
       },

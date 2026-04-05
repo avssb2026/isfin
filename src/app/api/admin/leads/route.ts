@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { operatorFullName } from "@/lib/operator-name";
 import { Prisma } from "@prisma/client";
 
 function buildSearchWhere(q: string): Prisma.LeadWhereInput {
@@ -19,7 +20,12 @@ function buildSearchWhere(q: string): Prisma.LeadWhereInput {
       {
         assignedOperator: {
           is: {
-            OR: [{ name: insensitive }, { email: insensitive }],
+            OR: [
+              { lastName: insensitive },
+              { firstName: insensitive },
+              { patronymic: insensitive },
+              { email: insensitive },
+            ],
           },
         },
       },
@@ -42,14 +48,27 @@ export async function GET(req: Request) {
     ...searchWhere,
   };
 
-  const leads = await prisma.lead.findMany({
+  const leadsRaw = await prisma.lead.findMany({
     where,
     orderBy: { createdAt: "desc" },
     include: {
       _count: { select: { activityLogs: true, chatSessions: true } },
-      assignedOperator: { select: { id: true, name: true, email: true } },
+      assignedOperator: {
+        select: { id: true, lastName: true, firstName: true, patronymic: true, email: true },
+      },
     },
   });
+
+  const leads = leadsRaw.map((l) => ({
+    ...l,
+    assignedOperator: l.assignedOperator
+      ? {
+          id: l.assignedOperator.id,
+          email: l.assignedOperator.email,
+          fullName: operatorFullName(l.assignedOperator),
+        }
+      : null,
+  }));
 
   return NextResponse.json({ leads });
 }

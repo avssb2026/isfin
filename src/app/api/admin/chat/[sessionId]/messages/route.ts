@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { operatorFullName } from "@/lib/operator-name";
 import { chatMessageSchema } from "@/lib/validations";
 import { rateLimit } from "@/lib/rate-limit";
 import { getClientId } from "@/lib/client-id";
@@ -28,6 +29,15 @@ export async function GET(
     return NextResponse.json({ error: "Не найдено" }, { status: 404 });
   }
 
+  const messages = chat.messages.map((m) => ({
+    ...m,
+    operator: m.operator
+      ? {
+          fullName: operatorFullName(m.operator),
+        }
+      : null,
+  }));
+
   if (!chat.assignedOperatorId) {
     await prisma.chatSession.update({
       where: { id: sessionId },
@@ -35,7 +45,12 @@ export async function GET(
     });
   }
 
-  return NextResponse.json({ chat });
+  return NextResponse.json({
+    chat: {
+      ...chat,
+      messages,
+    },
+  });
 }
 
 export async function POST(

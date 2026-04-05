@@ -9,7 +9,7 @@ type SessionRow = {
   status: string;
   updatedAt: string;
   messages: { body: string }[];
-  assignedOperator: { id: string; name: string } | null;
+  assignedOperator: { id: string; fullName: string } | null;
 };
 
 type Msg = {
@@ -17,7 +17,7 @@ type Msg = {
   body: string;
   senderRole: string;
   createdAt: string;
-  operator: { name: string } | null;
+  operator: { fullName: string } | null;
 };
 
 export default function AdminChatPage() {
@@ -138,7 +138,7 @@ export default function AdminChatPage() {
                   <p className="whitespace-pre-wrap">{m.body}</p>
                   <p className="mt-1 text-[10px] text-[var(--muted)]">
                     {m.senderRole === "OPERATOR"
-                      ? `Оператор${m.operator ? `: ${m.operator.name}` : ""}`
+                      ? `Оператор${m.operator ? `: ${m.operator.fullName}` : ""}`
                       : "Клиент"}
                   </p>
                 </div>
