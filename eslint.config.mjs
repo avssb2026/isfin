@@ -10,7 +10,7 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-export default [
+const config = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     plugins: { security },
@@ -18,5 +18,7 @@ export default [
       ...security.configs.recommended.rules,
     },
   },
-  { ignores: [".next/**", "node_modules/**", "prisma/**"] },
+  { ignores: [".next/**", "node_modules/**", "prisma/**", "next-env.d.ts"] },
 ];
+
+export default config;

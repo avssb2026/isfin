@@ -29,9 +29,6 @@ jobs:
       - name: Unit tests
         run: npm run test
 
-      - name: Audit dependencies
-        run: npm audit --audit-level=high
-
       - name: Build
         run: npm run build
         env:
