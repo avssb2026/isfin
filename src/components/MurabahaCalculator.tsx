@@ -94,57 +94,69 @@ export function MurabahaCalculator({ compact }: Props) {
         Расчёт ежемесячного взноса по согласованной с банком отсроченной цене.
       </p>
 
-      <div className="mt-6 grid gap-6 sm:grid-cols-2">
-        <div className="flex flex-col gap-2 text-sm">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <span className="font-medium text-[var(--text-secondary)]">Стоимость жилья</span>
-            <span className="font-semibold text-[var(--text)]">{formatMoney(price)} ₽</span>
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-3 gap-y-6 sm:gap-x-8 sm:gap-y-8">
+        <div className="flex min-w-0 flex-col gap-5 text-sm sm:gap-6">
+          <div className="flex min-w-0 flex-col gap-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(6.25rem,auto)] items-baseline gap-x-2 sm:grid-cols-[minmax(0,1fr)_minmax(7.5rem,auto)] sm:gap-x-3">
+              <span className="min-w-0 font-medium leading-snug text-[var(--text-secondary)]">
+                Стоимость жилья
+              </span>
+              <span className="text-right font-semibold tabular-nums text-[var(--text)]">
+                {formatMoney(price)}&nbsp;₽
+              </span>
+            </div>
+            <input
+              type="range"
+              min={PRICE_MIN}
+              max={PRICE_MAX}
+              step={PRICE_STEP}
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
+              className="w-full accent-[var(--accent)]"
+              aria-label="Стоимость жилья"
+            />
+            <div className="flex justify-between text-xs text-[var(--muted)]">
+              <span>{formatMoney(PRICE_MIN)} ₽</span>
+              <span>{formatMoney(PRICE_MAX)} ₽</span>
+            </div>
           </div>
-          <input
-            type="range"
-            min={PRICE_MIN}
-            max={PRICE_MAX}
-            step={PRICE_STEP}
-            value={price}
-            onChange={(e) => setPrice(Number(e.target.value))}
-            className="w-full accent-[var(--accent)]"
-            aria-label="Стоимость жилья"
-          />
-          <div className="flex justify-between text-xs text-[var(--muted)]">
-            <span>{formatMoney(PRICE_MIN)} ₽</span>
-            <span>{formatMoney(PRICE_MAX)} ₽</span>
+
+          <div className="flex min-w-0 flex-col gap-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(6.25rem,auto)] items-baseline gap-x-2 sm:grid-cols-[minmax(0,1fr)_minmax(7.5rem,auto)] sm:gap-x-3">
+              <span className="min-w-0 font-medium leading-snug text-[var(--text-secondary)]">
+                Первоначальный взнос
+              </span>
+              <span className="text-right font-semibold tabular-nums text-[var(--text)]">
+                {formatMoney(down)}&nbsp;₽
+              </span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={maxDown}
+              step={DOWN_STEP}
+              value={clampDown(price, down)}
+              onChange={(e) => setDown(Number(e.target.value))}
+              className="w-full accent-[var(--accent)]"
+              aria-label="Первоначальный взнос"
+              disabled={maxDown <= 0}
+            />
+            <div className="flex justify-between text-xs text-[var(--muted)]">
+              <span>0 ₽</span>
+              <span>{formatMoney(maxDown)} ₽</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 text-sm">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <span className="font-medium text-[var(--text-secondary)]">Первоначальный взнос</span>
-            <span className="font-semibold text-[var(--text)]">{formatMoney(down)} ₽</span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={maxDown}
-            step={DOWN_STEP}
-            value={clampDown(price, down)}
-            onChange={(e) => setDown(Number(e.target.value))}
-            className="w-full accent-[var(--accent)]"
-            aria-label="Первоначальный взнос"
-            disabled={maxDown <= 0}
-          />
-          <div className="flex justify-between text-xs text-[var(--muted)]">
-            <span>0 ₽</span>
-            <span>{formatMoney(maxDown)} ₽</span>
-          </div>
-        </div>
-
-        <label className="flex flex-col gap-1 text-sm sm:col-span-2">
-          <span className="font-medium text-[var(--text-secondary)]">Срок рассрочки, мес.</span>
+        <label className="flex w-[7rem] shrink-0 flex-col gap-2 text-sm sm:w-[12rem]">
+          <span className="font-medium leading-snug text-[var(--text-secondary)]">
+            Срок рассрочки, мес.
+          </span>
           <input
             type="number"
             min={MURABAHA_TERM_MONTHS_MIN}
             max={MURABAHA_TERM_MONTHS_MAX}
-            className="input-modern max-w-xs"
+            className="input-modern w-full min-w-0"
             value={months}
             onChange={(e) => {
               const v = Number(e.target.value);
@@ -159,7 +171,7 @@ export function MurabahaCalculator({ compact }: Props) {
           />
         </label>
 
-        <div className="rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-3.5 text-sm sm:col-span-2">
+        <div className="col-span-2 rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-3.5 text-sm">
           <p className="font-medium text-[var(--text)]">
             Годовой расчётный параметр (ключевая ставка):{" "}
             {rateLoading || annualParam === null ? (
