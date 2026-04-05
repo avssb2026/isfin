@@ -29,6 +29,13 @@ enum SenderRole {
   OPERATOR
 }
 
+/** Единственная строка: параметры калькулятора на публичном сайте */
+model BankSettings {
+  id                    String   @id @default("global")
+  annualSchedulePercent Float    @default(16)
+  updatedAt             DateTime @updatedAt
+}
+
 model User {
   id             String        @id @default(cuid())
   email          String        @unique

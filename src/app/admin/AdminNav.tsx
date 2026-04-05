@@ -19,6 +19,9 @@ export function AdminNav() {
           <Link href="/admin/chat" className="text-[var(--accent)] hover:underline">
             Онлайн-чат
           </Link>
+          <Link href="/admin/settings" className="text-[var(--accent)] hover:underline">
+            Калькулятор
+          </Link>
           <Link href="/" className="text-[var(--muted)] hover:text-[var(--text)]">
             Сайт
           </Link>

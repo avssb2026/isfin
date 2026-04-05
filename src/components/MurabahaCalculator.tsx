@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   calculateMurabahaSchedule,
   percentToUnit,
@@ -10,6 +10,13 @@ type Props = {
   compact?: boolean;
 };
 
+const PRICE_MIN = 500_000;
+const PRICE_MAX = 50_000_000;
+const PRICE_STEP = 100_000;
+/** Минимальная сумма под финансирование — взнос не может быть «почти вся цена» */
+const MIN_FINANCED = 100_000;
+const DOWN_STEP = 50_000;
+
 function formatMoney(n: number): string {
   return new Intl.NumberFormat("ru-RU", {
     style: "decimal",
@@ -18,17 +25,48 @@ function formatMoney(n: number): string {
   }).format(Math.round(n));
 }
 
+function clampDown(price: number, down: number): number {
+  const maxDown = Math.max(0, price - MIN_FINANCED);
+  return Math.min(Math.max(0, down), maxDown);
+}
+
 export function MurabahaCalculator({ compact }: Props) {
-  const defaultRate = Number(
+  const fallbackRate = Number(
     process.env.NEXT_PUBLIC_DEFAULT_KEY_RATE_PERCENT ?? "16",
   );
 
   const [price, setPrice] = useState(8_000_000);
   const [down, setDown] = useState(1_600_000);
   const [months, setMonths] = useState(240);
-  const [annualParam, setAnnualParam] = useState(defaultRate);
+  const [annualParam, setAnnualParam] = useState<number | null>(null);
+  const [rateLoading, setRateLoading] = useState(true);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const res = await fetch("/api/public/calculator-settings", {
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error("fetch");
+        const data = (await res.json()) as { annualSchedulePercent?: number };
+        const p = data.annualSchedulePercent;
+        setAnnualParam(typeof p === "number" && !Number.isNaN(p) ? p : fallbackRate);
+      } catch {
+        setAnnualParam(fallbackRate);
+      } finally {
+        setRateLoading(false);
+      }
+    })();
+  }, [fallbackRate]);
+
+  const maxDown = useMemo(() => Math.max(0, price - MIN_FINANCED), [price]);
+
+  useEffect(() => {
+    setDown((d) => clampDown(price, d));
+  }, [price]);
 
   const result = useMemo(() => {
+    if (annualParam === null) return null;
     try {
       return calculateMurabahaSchedule({
         propertyPrice: price,
@@ -41,71 +79,94 @@ export function MurabahaCalculator({ compact }: Props) {
     }
   }, [price, down, months, annualParam]);
 
+  const padClass = compact
+    ? "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm"
+    : "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-sm";
+
   return (
-    <div
-      className={
-        compact
-          ? "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm"
-          : "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-sm"
-      }
-    >
+    <div className={padClass}>
       <h3 className="text-lg font-semibold text-[var(--text)]">
         Калькулятор отсроченной цены (Мурабаха)
       </h3>
       <p className="mt-2 text-sm text-[var(--muted)]">
-        Расчёт ежемесячного взноса по согласованной с банком отсроченной цене. Параметры
-        подобраны так, чтобы соответствовать классической ипотечной модели при той же
-        ключевой ставке (без отображения процентов и пеней в интерфейсе).
+        Расчёт ежемесячного взноса по согласованной с банком отсроченной цене. Параметры подобраны
+        так, чтобы соответствовать классической ипотечной модели при той же ключевой ставке (без
+        отображения процентов и пеней в интерфейсе).
       </p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-[var(--muted)]">Стоимость жилья, ₽</span>
+      <div className="mt-6 grid gap-6 sm:grid-cols-2">
+        <div className="flex flex-col gap-2 text-sm">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <span className="text-[var(--muted)]">Стоимость жилья</span>
+            <span className="font-semibold text-[var(--text)]">{formatMoney(price)} ₽</span>
+          </div>
           <input
-            type="number"
-            min={100_000}
-            className="rounded-lg border border-[var(--border)] px-3 py-2"
+            type="range"
+            min={PRICE_MIN}
+            max={PRICE_MAX}
+            step={PRICE_STEP}
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
+            className="w-full accent-[var(--accent)]"
+            aria-label="Стоимость жилья"
           />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-[var(--muted)]">Первоначальный взнос, ₽</span>
+          <div className="flex justify-between text-xs text-[var(--muted)]">
+            <span>{formatMoney(PRICE_MIN)} ₽</span>
+            <span>{formatMoney(PRICE_MAX)} ₽</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2 text-sm">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <span className="text-[var(--muted)]">Первоначальный взнос</span>
+            <span className="font-semibold text-[var(--text)]">{formatMoney(down)} ₽</span>
+          </div>
           <input
-            type="number"
+            type="range"
             min={0}
-            className="rounded-lg border border-[var(--border)] px-3 py-2"
-            value={down}
+            max={maxDown}
+            step={DOWN_STEP}
+            value={clampDown(price, down)}
             onChange={(e) => setDown(Number(e.target.value))}
+            className="w-full accent-[var(--accent)]"
+            aria-label="Первоначальный взнос"
+            disabled={maxDown <= 0}
           />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
+          <div className="flex justify-between text-xs text-[var(--muted)]">
+            <span>0 ₽</span>
+            <span>{formatMoney(maxDown)} ₽</span>
+          </div>
+        </div>
+
+        <label className="flex flex-col gap-1 text-sm sm:col-span-2">
           <span className="text-[var(--muted)]">Срок рассрочки, мес.</span>
           <input
             type="number"
             min={12}
             max={360}
-            className="rounded-lg border border-[var(--border)] px-3 py-2"
+            className="max-w-xs rounded-lg border border-[var(--border)] px-3 py-2"
             value={months}
             onChange={(e) => setMonths(Number(e.target.value))}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-[var(--muted)]">
-            Годовой расчётный параметр (ключевая ставка), %
-          </span>
-          <input
-            type="number"
-            min={0}
-            step={0.1}
-            className="rounded-lg border border-[var(--border)] px-3 py-2"
-            value={annualParam}
-            onChange={(e) => setAnnualParam(Number(e.target.value))}
-          />
-        </label>
+
+        <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm sm:col-span-2">
+          <p className="font-medium text-[var(--text)]">
+            Годовой расчётный параметр (ключевая ставка):{" "}
+            {rateLoading || annualParam === null ? (
+              <span className="text-[var(--muted)]">загрузка…</span>
+            ) : (
+              <span>{annualParam.toLocaleString("ru-RU", { maximumFractionDigits: 2 })} %</span>
+            )}
+          </p>
+          <p className="mt-1 text-xs text-[var(--muted)]">
+            Значение задаётся банком и отображается для ориентира. Изменить его может только
+            оператор в бэк-офисе.
+          </p>
+        </div>
       </div>
 
-      {result && (
+      {result && annualParam !== null && (
         <dl className="mt-6 grid gap-3 rounded-xl bg-[var(--bg)] p-4 text-sm sm:grid-cols-2">
           <div>
             <dt className="text-[var(--muted)]">Сумма финансирования</dt>
@@ -126,7 +187,7 @@ export function MurabahaCalculator({ compact }: Props) {
         </dl>
       )}
 
-      {result === null && (
+      {result === null && annualParam !== null && (
         <p className="mt-4 text-sm text-red-600">Проверьте введённые значения.</p>
       )}
     </div>

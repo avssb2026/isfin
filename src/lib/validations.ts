@@ -37,3 +37,8 @@ export const leadPatchSchema = z
 export const activityNoteSchema = z.object({
   note: z.string().min(1).max(8000),
 });
+
+/** Годовой расчётный параметр калькулятора, % (например ключевая ставка для модели) */
+export const bankSettingsPatchSchema = z.object({
+  annualSchedulePercent: z.coerce.number().min(0).max(100),
+});
