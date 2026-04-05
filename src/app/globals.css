@@ -1,24 +1,61 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f6f7f8;
+  --bg: #f0f3f7;
+  --bg-subtle: #e8ecf2;
   --surface: #ffffff;
-  --text: #1a1d21;
-  --muted: #5c6370;
-  --accent: #1b8f4a;
-  --accent-hover: #157a3f;
-  --border: #e2e5ea;
+  --surface-glass: rgba(255, 255, 255, 0.72);
+  --text: #0f1419;
+  --text-secondary: #3d4a5c;
+  --muted: #5c6a7e;
+  --muted-light: #8b95a5;
+  /* Сбер-зелёный как ориентир + чуть более глубокий hover */
+  --accent: #0d9f4a;
+  --accent-hover: #0a853e;
+  --accent-soft: rgba(13, 159, 74, 0.1);
+  --accent-border: rgba(13, 159, 74, 0.25);
+  --border: #e1e6ed;
+  --border-strong: #cdd5e1;
+  --shadow-sm: 0 1px 2px rgba(15, 20, 25, 0.04);
+  --shadow-md: 0 4px 16px rgba(15, 20, 25, 0.06);
+  --shadow-lg: 0 12px 40px rgba(15, 20, 25, 0.08);
+  --shadow-card: 0 1px 0 rgba(15, 20, 25, 0.04), 0 8px 24px rgba(15, 20, 25, 0.06);
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
 }
 
 body {
   color: var(--text);
   background: var(--bg);
-  font-family:
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* Плавный фон страницы (как на giga.chat — мягкий градиент) */
+.page-gradient {
+  background:
+    radial-gradient(1200px 600px at 100% -20%, rgba(13, 159, 74, 0.07), transparent 60%),
+    radial-gradient(800px 400px at -10% 30%, rgba(59, 130, 246, 0.05), transparent 55%),
+    var(--bg);
+}
+
+/* Поля ввода — единый вид */
+.input-modern {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 0.625rem 1rem;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.input-modern:focus {
+  outline: none;
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* Range — чуть заметнее трек */
+input[type="range"] {
+  accent-color: var(--accent);
 }

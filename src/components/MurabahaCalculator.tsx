@@ -82,22 +82,22 @@ export function MurabahaCalculator({ compact }: Props) {
   }, [price, down, months, annualParam]);
 
   const padClass = compact
-    ? "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm"
-    : "rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-8 shadow-sm";
+    ? "rounded-[var(--radius-2xl)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-card)] ring-1 ring-black/[0.04]"
+    : "rounded-[var(--radius-2xl)] border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[var(--shadow-card)] ring-1 ring-black/[0.04]";
 
   return (
     <div className={padClass}>
-      <h3 className="text-lg font-semibold text-[var(--text)]">
+      <h3 className="text-lg font-bold tracking-tight text-[var(--text)] sm:text-xl">
         Калькулятор отсроченной цены (Мурабаха)
       </h3>
-      <p className="mt-2 text-sm text-[var(--muted)]">
+      <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
         Расчёт ежемесячного взноса по согласованной с банком отсроченной цене.
       </p>
 
       <div className="mt-6 grid gap-6 sm:grid-cols-2">
         <div className="flex flex-col gap-2 text-sm">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <span className="text-[var(--muted)]">Стоимость жилья</span>
+            <span className="font-medium text-[var(--text-secondary)]">Стоимость жилья</span>
             <span className="font-semibold text-[var(--text)]">{formatMoney(price)} ₽</span>
           </div>
           <input
@@ -118,7 +118,7 @@ export function MurabahaCalculator({ compact }: Props) {
 
         <div className="flex flex-col gap-2 text-sm">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <span className="text-[var(--muted)]">Первоначальный взнос</span>
+            <span className="font-medium text-[var(--text-secondary)]">Первоначальный взнос</span>
             <span className="font-semibold text-[var(--text)]">{formatMoney(down)} ₽</span>
           </div>
           <input
@@ -139,12 +139,12 @@ export function MurabahaCalculator({ compact }: Props) {
         </div>
 
         <label className="flex flex-col gap-1 text-sm sm:col-span-2">
-          <span className="text-[var(--muted)]">Срок рассрочки, мес.</span>
+          <span className="font-medium text-[var(--text-secondary)]">Срок рассрочки, мес.</span>
           <input
             type="number"
             min={MURABAHA_TERM_MONTHS_MIN}
             max={MURABAHA_TERM_MONTHS_MAX}
-            className="max-w-xs rounded-lg border border-[var(--border)] px-3 py-2"
+            className="input-modern max-w-xs"
             value={months}
             onChange={(e) => {
               const v = Number(e.target.value);
@@ -159,7 +159,7 @@ export function MurabahaCalculator({ compact }: Props) {
           />
         </label>
 
-        <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-sm sm:col-span-2">
+        <div className="rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-3.5 text-sm sm:col-span-2">
           <p className="font-medium text-[var(--text)]">
             Годовой расчётный параметр (ключевая ставка):{" "}
             {rateLoading || annualParam === null ? (
@@ -175,22 +175,38 @@ export function MurabahaCalculator({ compact }: Props) {
       </div>
 
       {result && annualParam !== null && (
-        <dl className="mt-6 grid gap-3 rounded-xl bg-[var(--bg)] p-4 text-sm sm:grid-cols-2">
-          <div>
-            <dt className="text-[var(--muted)]">Сумма финансирования</dt>
-            <dd className="text-lg font-semibold">{formatMoney(result.financedAmount)} ₽</dd>
+        <dl className="mt-8 grid gap-3 text-sm sm:grid-cols-2">
+          <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
+            <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+              Сумма финансирования
+            </dt>
+            <dd className="mt-1 text-lg font-bold tabular-nums text-[var(--text)]">
+              {formatMoney(result.financedAmount)} ₽
+            </dd>
           </div>
-          <div>
-            <dt className="text-[var(--muted)]">Ежемесячный взнос</dt>
-            <dd className="text-lg font-semibold">{formatMoney(result.monthlyPayment)} ₽</dd>
+          <div className="rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] p-4 sm:row-span-1">
+            <dt className="text-xs font-medium uppercase tracking-wide text-[var(--accent)]">
+              Ежемесячный взнос
+            </dt>
+            <dd className="mt-1 text-xl font-bold tabular-nums text-[var(--text)]">
+              {formatMoney(result.monthlyPayment)} ₽
+            </dd>
           </div>
-          <div>
-            <dt className="text-[var(--muted)]">Итоговая отсроченная цена</dt>
-            <dd className="font-medium">{formatMoney(result.totalDeferredPrice)} ₽</dd>
+          <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
+            <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+              Итоговая отсроченная цена
+            </dt>
+            <dd className="mt-1 font-semibold tabular-nums text-[var(--text)]">
+              {formatMoney(result.totalDeferredPrice)} ₽
+            </dd>
           </div>
-          <div>
-            <dt className="text-[var(--muted)]">Надбавка банка (маржа)</dt>
-            <dd className="font-medium">{formatMoney(result.totalMarkup)} ₽</dd>
+          <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
+            <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+              Надбавка банка (маржа)
+            </dt>
+            <dd className="mt-1 font-semibold tabular-nums text-[var(--text)]">
+              {formatMoney(result.totalMarkup)} ₽
+            </dd>
           </div>
         </dl>
       )}

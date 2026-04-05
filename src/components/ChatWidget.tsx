@@ -142,7 +142,7 @@ export function ChatWidget() {
       <button
         type="button"
         aria-label="Открыть чат"
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-lg transition hover:bg-[var(--accent-hover)]"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)] text-lg text-white shadow-[var(--shadow-lg)] shadow-[var(--accent)]/30 ring-4 ring-[var(--accent-soft)] transition hover:scale-[1.03] hover:bg-[var(--accent-hover)]"
         onClick={() => setOpen((v) => !v)}
       >
         💬
@@ -150,11 +150,11 @@ export function ChatWidget() {
 
       {open && (
         <div
-          className="fixed bottom-24 right-6 z-50 flex w-[min(100vw-2rem,380px)] flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-2xl"
+          className="fixed bottom-24 right-6 z-50 flex w-[min(100vw-2rem,400px)] flex-col overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-lg)]"
           role="dialog"
           aria-label="Чат с банком"
         >
-          <div className="flex items-center justify-between border-b border-[var(--border)] bg-[var(--bg)] px-4 py-3">
+          <div className="flex items-center justify-between border-b border-[var(--border)] bg-gradient-to-r from-[var(--bg)] to-[var(--surface)] px-4 py-3.5">
             <span className="font-semibold text-[var(--text)]">Консультация</span>
             <button
               type="button"
@@ -167,24 +167,24 @@ export function ChatWidget() {
 
           {step === "pre" && (
             <form onSubmit={startChat} className="flex flex-col gap-3 p-4">
-              <p className="text-sm text-[var(--muted)]">
+              <p className="text-sm leading-relaxed text-[var(--muted)]">
                 Укажите контакты, чтобы мы могли помочь по продукту Мурабаха.
               </p>
               <label className="text-sm">
-                <span className="text-[var(--muted)]">Имя</span>
+                <span className="font-medium text-[var(--text-secondary)]">Имя</span>
                 <input
                   required
-                  className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2"
+                  className="input-modern mt-2 w-full"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
                 />
               </label>
               <label className="text-sm">
-                <span className="text-[var(--muted)]">Телефон</span>
+                <span className="font-medium text-[var(--text-secondary)]">Телефон</span>
                 <input
                   required
-                  className="mt-1 w-full rounded-lg border border-[var(--border)] px-3 py-2"
+                  className="input-modern mt-2 w-full"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   autoComplete="tel"
@@ -195,7 +195,7 @@ export function ChatWidget() {
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-lg bg-[var(--accent)] py-2.5 font-medium text-white hover:bg-[var(--accent-hover)] disabled:opacity-60"
+                className="rounded-xl bg-[var(--accent)] py-3 text-sm font-semibold text-white shadow-md shadow-[var(--accent)]/20 hover:bg-[var(--accent-hover)] disabled:opacity-60"
               >
                 {loading ? "…" : "Начать чат"}
               </button>
@@ -226,7 +226,7 @@ export function ChatWidget() {
                 {error && <p className="mb-2 text-xs text-red-600">{error}</p>}
                 <div className="flex gap-2">
                   <input
-                    className="flex-1 rounded-lg border border-[var(--border)] px-3 py-2"
+                    className="input-modern flex-1"
                     placeholder="Сообщение…"
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
