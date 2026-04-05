@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { ConditionalChatWidget } from "@/components/ConditionalChatWidget";
@@ -19,6 +20,7 @@ export default function RootLayout({
       <body className="min-h-screen antialiased">
         <Providers>{children}</Providers>
         <ConditionalChatWidget />
+        <SpeedInsights />
       </body>
     </html>
   );
