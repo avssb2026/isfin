@@ -1,0 +1,112 @@
+<mxfile host="app.diagrams.net" agent="isfin">
+  <diagram id="isfin-db" name="PostgreSQL (Prisma)">
+    <mxGraphModel dx="1222" dy="716" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="legend" parent="1" style="text;html=1;strokeColor=none;fillColor=#fff9e6;align=left;verticalAlign=middle;fontSize=10;rounded=1;spacingLeft=8;spacingRight=8;" value="Условные обозначения: PK — первичный ключ · FK — внешний ключ · UQ — уникальность · onDelete: Cascade / SetNull" vertex="1">
+          <mxGeometry height="36" width="920" x="40" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="t_bs" parent="1" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontFamily=Verdana;" value="&lt;b&gt;BankSettings&lt;/b&gt; (таблица по смыслу одна строка)&#xa;──────────────&#xa;&lt;b&gt;PK&lt;/b&gt; id String @default(&quot;global&quot;)&#xa;    annualSchedulePercent Float&#xa;    updatedAt DateTime @updatedAt" vertex="1">
+          <mxGeometry height="100" width="280" x="40" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t_bo" parent="1" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontFamily=Verdana;" value="&lt;b&gt;BankOperator&lt;/b&gt; → &lt;i&gt;bank_operators&lt;/i&gt;&#xa;──────────────&#xa;&lt;b&gt;PK&lt;/b&gt; id String @id @default(cuid())&#xa;&lt;b&gt;UQ&lt;/b&gt; email String&#xa;    lastName, firstName String&#xa;    patronymic String?&#xa;    passwordHash String&#xa;    role Role @default(OPERATOR)&#xa;    createdAt DateTime&#xa;    LAST_LOGIN, LAST_ACTIVITY DateTime?" vertex="1">
+          <mxGeometry height="180" width="300" x="380" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="t_lead" parent="1" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontFamily=Verdana;" value="&lt;b&gt;Lead&lt;/b&gt;&#xa;──────────────&#xa;&lt;b&gt;PK&lt;/b&gt; id String @id&#xa;&lt;b&gt;FK&lt;/b&gt; assignedOperatorId String? → BankOperator&#xa;    lastName, firstName String&#xa;    phone String&#xa;    source String @default(&quot;product&quot;)&#xa;    status LeadStatus&#xa;    createdAt, updatedAt DateTime&#xa;    @@index(assignedOperatorId)" vertex="1">
+          <mxGeometry height="170" width="300" x="40" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="t_al" parent="1" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontFamily=Verdana;" value="&lt;b&gt;ActivityLog&lt;/b&gt;&#xa;──────────────&#xa;&lt;b&gt;PK&lt;/b&gt; id String @id&#xa;&lt;b&gt;FK&lt;/b&gt; leadId String → Lead &lt;i&gt;Cascade&lt;/i&gt;&#xa;&lt;b&gt;FK&lt;/b&gt; operatorId String? → BankOperator &lt;i&gt;SetNull&lt;/i&gt;&#xa;    type String&#xa;    note Text&#xa;    createdAt DateTime&#xa;    @@index(leadId)" vertex="1">
+          <mxGeometry height="150" width="300" x="40" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="t_cs" parent="1" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontFamily=Verdana;" value="&lt;b&gt;ChatSession&lt;/b&gt;&#xa;──────────────&#xa;&lt;b&gt;PK&lt;/b&gt; id String @id&#xa;&lt;b&gt;FK&lt;/b&gt; leadId String? → Lead &lt;i&gt;SetNull&lt;/i&gt;&#xa;&lt;b&gt;FK&lt;/b&gt; assignedOperatorId String? → BankOperator &lt;i&gt;SetNull&lt;/i&gt;&#xa;    visitorName, visitorPhone String&#xa;    status ChatSessionStatus&#xa;    createdAt, updatedAt DateTime&#xa;    @@index(status)" vertex="1">
+          <mxGeometry height="170" width="300" x="740" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="t_cm" parent="1" style="shape=rectangle;rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;fontFamily=Verdana;" value="&lt;b&gt;ChatMessage&lt;/b&gt;&#xa;──────────────&#xa;&lt;b&gt;PK&lt;/b&gt; id String @id&#xa;&lt;b&gt;FK&lt;/b&gt; sessionId String → ChatSession &lt;i&gt;Cascade&lt;/i&gt;&#xa;&lt;b&gt;FK&lt;/b&gt; operatorId String? → BankOperator &lt;i&gt;SetNull&lt;/i&gt;&#xa;    body Text&#xa;    senderRole SenderRole&#xa;    createdAt DateTime&#xa;    @@index(sessionId, createdAt)" vertex="1">
+          <mxGeometry height="150" width="300" x="740" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="enums" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;size=14;align=left;spacingLeft=10;fontSize=10;" value="&lt;b&gt;Перечисления (enum в PostgreSQL)&lt;/b&gt;&#xa;Role: OPERATOR | ADMIN&#xa;LeadStatus: NEW | IN_PROGRESS | CLOSED&#xa;ChatSessionStatus: OPEN | CLOSED&#xa;SenderRole: VISITOR | OPERATOR" vertex="1">
+          <mxGeometry height="90" width="300" x="380" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e_lead_bo" edge="1" parent="1" source="t_lead" style="endArrow=block;endFill=1;startArrow=oval;startFill=1;html=1;rounded=0;exitX=1;exitY=0.35;exitDx=0;exitDy=0;entryX=0;entryY=0.35;entryDx=0;entryDy=0;strokeWidth=2;" target="t_bo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_lead_bo_l" connectable="0" parent="e_lead_bo" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;backgroundColor=#ffffff;" value="assignedOperatorId" vertex="1">
+          <mxGeometry relative="1" x="-0.1" y="1" as="geometry">
+            <mxPoint x="-18" y="-12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_al_lead" edge="1" parent="1" source="t_al" style="endArrow=block;endFill=1;startArrow=oval;startFill=1;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;" target="t_lead">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_al_lead_l" connectable="0" parent="e_al_lead" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;backgroundColor=#ffffff;" value="leadId" vertex="1">
+          <mxGeometry relative="1" x="-0.2" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_al_bo" edge="1" parent="1" source="t_al" style="endArrow=block;endFill=1;startArrow=oval;startFill=1;html=1;rounded=0;strokeWidth=2;dashed=1;" target="t_bo">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="495" />
+              <mxPoint x="360" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_al_bo_l" connectable="0" parent="e_al_bo" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;backgroundColor=#ffffff;" value="operatorId?" vertex="1">
+          <mxGeometry relative="1" x="0.2" y="-1" as="geometry">
+            <mxPoint x="20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cs_lead" edge="1" parent="1" source="t_cs" style="endArrow=block;endFill=1;startArrow=oval;startFill=1;html=1;rounded=0;exitX=0;exitY=0.3;exitDx=0;exitDy=0;entryX=1;entryY=0.65;entryDx=0;entryDy=0;strokeWidth=2;" target="t_lead">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="251" />
+              <mxPoint x="700" y="311" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cs_lead_l" connectable="0" parent="e_cs_lead" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;backgroundColor=#ffffff;" value="leadId?" vertex="1">
+          <mxGeometry relative="1" x="0.3" y="-1" as="geometry">
+            <mxPoint y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cs_bo" edge="1" parent="1" source="t_cs" style="endArrow=block;endFill=1;startArrow=oval;startFill=1;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;" target="t_bo">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="890" y="170" />
+              <mxPoint x="720" y="170" />
+              <mxPoint x="720" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cs_bo_l" connectable="0" parent="e_cs_bo" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;backgroundColor=#ffffff;" value="assignedOperatorId?" vertex="1">
+          <mxGeometry relative="1" x="0.2" y="-1" as="geometry">
+            <mxPoint x="-30" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cm_cs" edge="1" parent="1" source="t_cm" style="endArrow=block;endFill=1;startArrow=oval;startFill=1;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;" target="t_cs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_cm_cs_l" connectable="0" parent="e_cm_cs" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;backgroundColor=#ffffff;" value="sessionId" vertex="1">
+          <mxGeometry relative="1" x="-0.1" y="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cm_bo" edge="1" parent="1" source="t_cm" style="endArrow=block;endFill=1;startArrow=oval;startFill=1;html=1;rounded=0;strokeWidth=2;dashed=1;" target="t_bo">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="700" y="495" />
+              <mxPoint x="700" y="350" />
+              <mxPoint x="530" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_cm_bo_l" connectable="0" parent="e_cm_bo" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;backgroundColor=#ffffff;" value="operatorId?" vertex="1">
+          <mxGeometry relative="1" x="0.15" y="1" as="geometry">
+            <mxPoint x="-40" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
