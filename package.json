@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "npm audit --omit=dev",
+    "prebuild": "node scripts/npm-audit-ci.mjs",
     "build": "prisma migrate deploy && prisma generate && next build",
     "start": "next start",
     "lint": "eslint",

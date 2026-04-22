@@ -37,6 +37,8 @@ export function MurabahaCalculator({ compact }: Props) {
     process.env.NEXT_PUBLIC_DEFAULT_KEY_RATE_PERCENT ?? "16",
   );
 
+  const showOnlyLandingFields = Boolean(compact);
+
   const [price, setPrice] = useState(8_000_000);
   const [down, setDown] = useState(1_600_000);
   const [months, setMonths] = useState(240);
@@ -148,28 +150,30 @@ export function MurabahaCalculator({ compact }: Props) {
           </div>
         </div>
 
-        <label className="flex w-[7rem] shrink-0 flex-col gap-2 text-sm sm:w-[12rem]">
-          <span className="font-medium leading-snug text-[var(--text-secondary)]">
-            Срок рассрочки, мес.
-          </span>
-          <input
-            type="number"
-            min={MURABAHA_TERM_MONTHS_MIN}
-            max={MURABAHA_TERM_MONTHS_MAX}
-            className="input-modern w-full min-w-0"
-            value={months}
-            onChange={(e) => {
-              const v = Number(e.target.value);
-              if (Number.isNaN(v)) return;
-              setMonths(
-                Math.min(
-                  MURABAHA_TERM_MONTHS_MAX,
-                  Math.max(MURABAHA_TERM_MONTHS_MIN, Math.round(v)),
-                ),
-              );
-            }}
-          />
-        </label>
+        {!showOnlyLandingFields && (
+          <label className="flex w-[7rem] shrink-0 flex-col gap-2 text-sm sm:w-[12rem]">
+            <span className="font-medium leading-snug text-[var(--text-secondary)]">
+              Срок рассрочки, мес.
+            </span>
+            <input
+              type="number"
+              min={MURABAHA_TERM_MONTHS_MIN}
+              max={MURABAHA_TERM_MONTHS_MAX}
+              className="input-modern w-full min-w-0"
+              value={months}
+              onChange={(e) => {
+                const v = Number(e.target.value);
+                if (Number.isNaN(v)) return;
+                setMonths(
+                  Math.min(
+                    MURABAHA_TERM_MONTHS_MAX,
+                    Math.max(MURABAHA_TERM_MONTHS_MIN, Math.round(v)),
+                  ),
+                );
+              }}
+            />
+          </label>
+        )}
 
         <div className="col-span-2 rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-3.5 text-sm">
           <p className="font-medium text-[var(--text)]">
@@ -188,14 +192,6 @@ export function MurabahaCalculator({ compact }: Props) {
 
       {result && annualParam !== null && (
         <dl className="mt-8 grid gap-3 text-sm sm:grid-cols-2">
-          <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
-            <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-              Сумма финансирования
-            </dt>
-            <dd className="mt-1 text-lg font-bold tabular-nums text-[var(--text)]">
-              {formatMoney(result.financedAmount)} ₽
-            </dd>
-          </div>
           <div className="rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] p-4 sm:row-span-1">
             <dt className="text-xs font-medium uppercase tracking-wide text-[var(--accent)]">
               Ежемесячный взнос
@@ -204,22 +200,34 @@ export function MurabahaCalculator({ compact }: Props) {
               {formatMoney(result.monthlyPayment)} ₽
             </dd>
           </div>
-          <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
-            <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-              Итоговая отсроченная цена
-            </dt>
-            <dd className="mt-1 font-semibold tabular-nums text-[var(--text)]">
-              {formatMoney(result.totalDeferredPrice)} ₽
-            </dd>
-          </div>
-          <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
-            <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-              Надбавка банка (маржа)
-            </dt>
-            <dd className="mt-1 font-semibold tabular-nums text-[var(--text)]">
-              {formatMoney(result.totalMarkup)} ₽
-            </dd>
-          </div>
+          {!showOnlyLandingFields && (
+            <>
+              <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
+                <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+                  Сумма финансирования
+                </dt>
+                <dd className="mt-1 text-lg font-bold tabular-nums text-[var(--text)]">
+                  {formatMoney(result.financedAmount)} ₽
+                </dd>
+              </div>
+              <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
+                <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+                  Итоговая отсроченная цена
+                </dt>
+                <dd className="mt-1 font-semibold tabular-nums text-[var(--text)]">
+                  {formatMoney(result.totalDeferredPrice)} ₽
+                </dd>
+              </div>
+              <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
+                <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
+                  Надбавка банка (маржа)
+                </dt>
+                <dd className="mt-1 font-semibold tabular-nums text-[var(--text)]">
+                  {formatMoney(result.totalMarkup)} ₽
+                </dd>
+              </div>
+            </>
+          )}
         </dl>
       )}
 
