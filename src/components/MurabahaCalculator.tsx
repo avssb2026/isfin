@@ -199,18 +199,10 @@ export function MurabahaCalculator({ compact }: Props) {
               </div>
               <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
                 <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-                  Итоговая отсроченная цена
+                  Итоговая цена
                 </dt>
                 <dd className="mt-1 font-semibold tabular-nums text-[var(--text)]">
                   {formatMoney(result.totalDeferredPrice)} ₽
-                </dd>
-              </div>
-              <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-4">
-                <dt className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
-                  Надбавка банка (маржа)
-                </dt>
-                <dd className="mt-1 font-semibold tabular-nums text-[var(--text)]">
-                  {formatMoney(result.totalMarkup)} ₽
                 </dd>
               </div>
             </>
