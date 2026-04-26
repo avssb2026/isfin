@@ -212,10 +212,6 @@ export default function ProductPage() {
                       {MURABAHA_TERM_MONTHS_MAX} мес.; по договору зависит от скоринга и программы.
                     </li>
                     <li>Досрочное погашение и изменение графика — по условиям договора.</li>
-                    <li>
-                      <span className="font-medium text-[var(--text)]">Страхование не требуется</span>{" "}
-                      для ипотеки «Мурабаха» в рамках данного продукта.
-                    </li>
                   </ul>
                 </div>
               </div>

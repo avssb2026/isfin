@@ -180,7 +180,7 @@ export function MurabahaCalculator({ compact }: Props) {
         <dl className="mt-8 grid gap-3 text-sm sm:grid-cols-2">
           <div className="rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] p-4 sm:row-span-1">
             <dt className="text-xs font-medium uppercase tracking-wide text-[var(--accent)]">
-              Ежемесячный взнос
+              Ежемесячный платёж
             </dt>
             <dd className="mt-1 text-xl font-bold tabular-nums text-[var(--text)]">
               {formatMoney(result.monthlyPayment)} ₽
