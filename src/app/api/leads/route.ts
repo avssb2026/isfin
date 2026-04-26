@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     body && typeof body === "object" && !Array.isArray(body)
       ? (body as Record<string, unknown>)
       : {};
-  const gate = applyFormCaptchaGate("lead", clientIp, obj);
+  const gate = await applyFormCaptchaGate("lead", clientIp, obj);
   if (!gate.ok) {
     return gate.response;
   }

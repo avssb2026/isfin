@@ -27,7 +27,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             ? String(credentials.captchaAnswer)
             : undefined;
         if (!email || !password) return null;
-        if (!verifyMathCaptcha(captchaToken, captchaAnswer)) return null;
+        if (!(await verifyMathCaptcha(captchaToken, captchaAnswer))) return null;
 
         const user = await prisma.bankOperator.findUnique({
           where: { email: String(email) },

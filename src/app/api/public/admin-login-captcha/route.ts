@@ -12,5 +12,5 @@ export async function GET(req: Request) {
   if (!limited.ok) {
     return NextResponse.json({ error: "Слишком много запросов" }, { status: 429 });
   }
-  return NextResponse.json(createMathCaptcha());
+  return NextResponse.json(await createMathCaptcha());
 }

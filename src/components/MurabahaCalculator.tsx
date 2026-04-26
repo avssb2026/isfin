@@ -90,7 +90,7 @@ export function MurabahaCalculator({ compact }: Props) {
   return (
     <div className={padClass}>
       <h3 className="text-lg font-bold tracking-tight text-[var(--text)] sm:text-xl">
-        Калькулятор отсроченной цены (Мурабаха)
+        Калькулятор ипотеки «Мурабаха» в рассрочку
       </h3>
       <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
         Расчёт ежемесячного взноса по согласованной с банком отсроченной цене.

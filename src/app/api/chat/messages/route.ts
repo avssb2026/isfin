@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     body && typeof body === "object" && !Array.isArray(body)
       ? (body as Record<string, unknown>)
       : {};
-  const gate = applyFormCaptchaGate("chat_msg", clientIp, obj);
+  const gate = await applyFormCaptchaGate("chat_msg", clientIp, obj);
   if (!gate.ok) {
     return gate.response;
   }
