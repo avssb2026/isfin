@@ -111,6 +111,16 @@ export default function ProductPage() {
             график взносов. Рассчитайте рассрочку на калькуляторе и подайте заявку на консультацию и
             оформление.
           </p>
+          <a
+            href="/docs/Murabakha_fatwa.pdf"
+            download
+            target="_blank"
+            rel="noreferrer"
+            className="mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--accent-border)] hover:bg-[var(--accent-soft)]"
+          >
+            Скачать фетву (PDF)
+            <span aria-hidden>↓</span>
+          </a>
         </div>
 
         <section className="mt-10">
