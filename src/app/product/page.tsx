@@ -109,18 +109,20 @@ export default function ProductPage() {
             Продукт предназначен для приобретения готового жилья или на этапе строительства в
             соответствии с шариатским подходом: фиксируется цена банка, отсроченная цена для вас и
             график взносов. Рассчитайте рассрочку на калькуляторе и подайте заявку на консультацию и
-            оформление.
+            оформление. Фетва разработана и утверждена Духовным управлением мусульман (России,
+            Татарстана, Чечни, Дагестана), Международным шариатским советом, Центральным духовным
+            управлением мусульман (ЦДУМ).{" "}
+            <a
+              href="/docs/Murabakha_fatwa.pdf"
+              download
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[var(--accent)] underline decoration-[var(--accent)]/40 underline-offset-4 transition hover:text-[var(--accent-hover)]"
+            >
+              Скачать фетву (PDF)
+            </a>
+            .
           </p>
-          <a
-            href="/docs/Murabakha_fatwa.pdf"
-            download
-            target="_blank"
-            rel="noreferrer"
-            className="mt-5 inline-flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-5 py-2.5 text-sm font-semibold text-[var(--text)] transition hover:border-[var(--accent-border)] hover:bg-[var(--accent-soft)]"
-          >
-            Скачать фетву (PDF)
-            <span aria-hidden>↓</span>
-          </a>
         </div>
 
         <section className="mt-10">
@@ -138,6 +140,9 @@ export default function ProductPage() {
                   Мурабаха — это покупка объекта банком и последующая продажа вам в рассрочку по
                   заранее согласованной отсроченной цене. Ниже — укрупнённая схема сделки от подбора
                   объекта до полного погашения.
+                </p>
+                <p className="mt-3 text-[var(--muted)] leading-relaxed">
+                  Продукт разработан для всех клиентов независимо от вероисповедания.
                 </p>
                 <ol className="mt-5 space-y-3 text-[var(--muted)] leading-relaxed">
                   <li>
