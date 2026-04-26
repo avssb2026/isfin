@@ -32,6 +32,6 @@ jobs:
         run: npm run test
 
       - name: Build
-        run: npm run build
+        run: npx prisma generate && next build
         env:
           AUTH_SECRET: ci-build-placeholder-secret-min-32-chars-long
