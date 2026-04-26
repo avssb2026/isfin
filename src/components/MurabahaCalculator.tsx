@@ -174,20 +174,6 @@ export function MurabahaCalculator({ compact }: Props) {
             />
           </label>
         )}
-
-        <div className="col-span-2 rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] px-4 py-3.5 text-sm">
-          <p className="font-medium text-[var(--text)]">
-            Годовой расчётный параметр (ключевая ставка):{" "}
-            {rateLoading || annualParam === null ? (
-              <span className="text-[var(--muted)]">загрузка…</span>
-            ) : (
-              <span>{annualParam.toLocaleString("ru-RU", { maximumFractionDigits: 2 })} %</span>
-            )}
-          </p>
-          <p className="mt-1 text-xs text-[var(--muted)]">
-            Значение задаётся банком на основании ключевой ставки ЦБ РФ и отображается справочно.
-          </p>
-        </div>
       </div>
 
       {result && annualParam !== null && (

@@ -117,26 +117,109 @@ export default function ProductPage() {
           <MurabahaCalculator />
         </section>
 
-        <section className="mt-14">
+        <section id="conditions" className="mt-14 scroll-mt-28">
           <h2 className="text-xl font-bold text-[var(--text)] sm:text-2xl">
-            Детальные условия (обобщённо)
+            Детальные условия и схема сделки
           </h2>
           <div className="mt-6 rounded-[var(--radius-2xl)] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-sm)] sm:p-8">
-            <ul className="list-inside list-disc space-y-2 text-[var(--muted)] leading-relaxed">
-              <li>Объект: жилое помещение на территории РФ, соответствующее требованиям банка.</li>
-              <li>Первоначальный взнос: размер определяется политикой банка и профилем сделки.</li>
-              <li>
-                Срок рассрочки: в калькуляторе на странице — от {MURABAHA_TERM_MONTHS_MIN} до{" "}
-                {MURABAHA_TERM_MONTHS_MAX} мес.; итоговый срок по договору зависит от программы и
-                скоринга.
-              </li>
-              <li>
-                Отсроченная цена включает маржу банка; расчётный годовой параметр согласуется с
-                ключевой ставкой для сопоставимости с рыночной ипотекой.
-              </li>
-              <li>Досрочное погашение и изменение графика — по правилам договора.</li>
-              <li>Страхование и оценка — по стандартным требованиям к ипотечным сделкам.</li>
-            </ul>
+            <div className="grid gap-8 lg:grid-cols-2 lg:gap-10">
+              <div>
+                <p className="text-[var(--muted)] leading-relaxed">
+                  Мурабаха — это покупка объекта банком и последующая продажа вам в рассрочку по
+                  заранее согласованной отсроченной цене. Ниже — укрупнённая схема сделки от подбора
+                  объекта до полного погашения.
+                </p>
+                <ol className="mt-5 space-y-3 text-[var(--muted)] leading-relaxed">
+                  <li>
+                    <span className="font-semibold text-[var(--text)]">1. Подбор объекта.</span>{" "}
+                    Вы выбираете недвижимость и предоставляете базовые документы по объекту и
+                    продавцу.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-[var(--text)]">2. Проверка банком.</span>{" "}
+                    Банк анализирует объект, документы и риски (юридическая чистота, параметры,
+                    ликвидность), согласует структуру сделки и график платежей.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-[var(--text)]">
+                      3. Приобретение объекта банком.
+                    </span>{" "}
+                    Банк заключает договор купли‑продажи с продавцом и оплачивает покупку объекта.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-[var(--text)]">
+                      4. Продажа клиенту в рассрочку (Мурабаха).
+                    </span>{" "}
+                    Банк продаёт объект вам по отсроченной цене с графиком взносов (первоначальный
+                    взнос + ежемесячные платежи).
+                  </li>
+                  <li>
+                    <span className="font-semibold text-[var(--text)]">
+                      5. Регистрация и залог.
+                    </span>{" "}
+                    Права и/или обременение регистрируются в Росреестре. Объект находится в залоге у
+                    банка до полного погашения задолженности по договору.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-[var(--text)]">6. Погашение.</span>{" "}
+                    Вы вносите платежи по графику; возможно досрочное погашение по условиям договора.
+                  </li>
+                  <li>
+                    <span className="font-semibold text-[var(--text)]">
+                      7. Снятие обременения.
+                    </span>{" "}
+                    После полного исполнения обязательств банк инициирует снятие залога/обременения в
+                    Росреестре.
+                  </li>
+                </ol>
+              </div>
+
+              <div className="space-y-6">
+                <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-5">
+                  <h3 className="text-sm font-semibold text-[var(--text)]">Параметры объекта</h3>
+                  <ul className="mt-3 list-inside list-disc space-y-2 text-[var(--muted)] leading-relaxed">
+                    <li>Жилая недвижимость (квартира/дом).</li>
+                    <li>Коммерческая недвижимость (при наличии программы банка).</li>
+                    <li>Земельные участки (при наличии программы банка).</li>
+                  </ul>
+                </div>
+
+                <div className="rounded-[var(--radius-xl)] border border-[var(--border)] bg-[var(--bg)] p-5">
+                  <h3 className="text-sm font-semibold text-[var(--text)]">Требования банка к объекту</h3>
+                  <ul className="mt-3 list-inside list-disc space-y-2 text-[var(--muted)] leading-relaxed">
+                    <li>
+                      Год постройки дома: <span className="font-medium text-[var(--text)]">не старше 1960</span>{" "}
+                      (или по индивидуальному решению банка).
+                    </li>
+                    <li>Объект расположен на территории РФ.</li>
+                    <li>Юридическая чистота: отсутствие критичных обременений/споров.</li>
+                    <li>
+                      Документы по объекту и продавцу должны позволять безопасно зарегистрировать
+                      сделку и залог в Росреестре.
+                    </li>
+                  </ul>
+                  <p className="mt-3 text-xs text-[var(--muted)]">
+                    Итоговые требования и перечень документов зависят от типа объекта и региона.
+                  </p>
+                </div>
+
+                <div className="rounded-[var(--radius-xl)] border border-[var(--accent-border)] bg-[var(--accent-soft)] p-5">
+                  <h3 className="text-sm font-semibold text-[var(--text)]">Финансовые параметры</h3>
+                  <ul className="mt-3 list-inside list-disc space-y-2 text-[var(--muted)] leading-relaxed">
+                    <li>Первоначальный взнос: определяется политикой банка и профилем сделки.</li>
+                    <li>
+                      Срок рассрочки: в калькуляторе — от {MURABAHA_TERM_MONTHS_MIN} до{" "}
+                      {MURABAHA_TERM_MONTHS_MAX} мес.; по договору зависит от скоринга и программы.
+                    </li>
+                    <li>Досрочное погашение и изменение графика — по условиям договора.</li>
+                    <li>
+                      <span className="font-medium text-[var(--text)]">Страхование не требуется</span>{" "}
+                      для ипотеки «Мурабаха» в рамках данного продукта.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
