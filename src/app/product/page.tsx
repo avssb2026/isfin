@@ -230,8 +230,9 @@ export default function ProductPage() {
         >
           <h2 className="text-xl font-bold text-[var(--text)] sm:text-2xl">Заявка на оформление</h2>
           <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">
-            Данные попадают в CRM банка. Голосовой ввод работает в поддерживаемых браузерах (кнопка у
-            поля).
+            После отправки заявки с вами свяжется специалист для подробной консультации по оформлению
+            сделки. Данные попадают в CRM банка. Голосовой ввод работает в поддерживаемых браузерах
+            (кнопка у поля).
           </p>
 
           <form onSubmit={submit} className="mt-8 grid gap-5 sm:grid-cols-2">

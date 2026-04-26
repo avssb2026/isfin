@@ -18,6 +18,7 @@ const PRICE_STEP = 100_000;
 /** Минимальная сумма под финансирование — взнос не может быть «почти вся цена» */
 const MIN_FINANCED = 100_000;
 const DOWN_STEP = 50_000;
+const TERM_STEP = 12;
 
 function formatMoney(n: number): string {
   return new Intl.NumberFormat("ru-RU", {
@@ -148,30 +149,32 @@ export function MurabahaCalculator({ compact }: Props) {
               <span>{formatMoney(maxDown)} ₽</span>
             </div>
           </div>
-        </div>
 
-        <label className="flex w-[7rem] shrink-0 flex-col gap-2 text-sm sm:w-[12rem]">
-          <span className="font-medium leading-snug text-[var(--text-secondary)]">
-            Период рассрочки, мес.
-          </span>
-          <input
-            type="number"
-            min={MURABAHA_TERM_MONTHS_MIN}
-            max={MURABAHA_TERM_MONTHS_MAX}
-            className="input-modern w-full min-w-0"
-            value={months}
-            onChange={(e) => {
-              const v = Number(e.target.value);
-              if (Number.isNaN(v)) return;
-              setMonths(
-                Math.min(
-                  MURABAHA_TERM_MONTHS_MAX,
-                  Math.max(MURABAHA_TERM_MONTHS_MIN, Math.round(v)),
-                ),
-              );
-            }}
-          />
-        </label>
+          <div className="flex min-w-0 flex-col gap-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(6.25rem,auto)] items-baseline gap-x-2 sm:grid-cols-[minmax(0,1fr)_minmax(7.5rem,auto)] sm:gap-x-3">
+              <span className="min-w-0 font-medium leading-snug text-[var(--text-secondary)]">
+                Период рассрочки
+              </span>
+              <span className="text-right font-semibold tabular-nums text-[var(--text)]">
+                {months}&nbsp;мес.
+              </span>
+            </div>
+            <input
+              type="range"
+              min={MURABAHA_TERM_MONTHS_MIN}
+              max={MURABAHA_TERM_MONTHS_MAX}
+              step={TERM_STEP}
+              value={months}
+              onChange={(e) => setMonths(Number(e.target.value))}
+              className="w-full accent-[var(--accent)]"
+              aria-label="Период рассрочки"
+            />
+            <div className="flex justify-between text-xs text-[var(--muted)]">
+              <span>{MURABAHA_TERM_MONTHS_MIN} мес.</span>
+              <span>{MURABAHA_TERM_MONTHS_MAX} мес.</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {result && annualParam !== null && (
