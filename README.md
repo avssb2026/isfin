@@ -22,7 +22,7 @@
    cp .env.example .env
    ```
 
-   Заполните **`isfin_db_DATABASE_URL`** (и при необходимости **`isfin_db_PRISMA_DATABASE_URL`** / **`isfin_db_POSTGRES_URL`** из Prisma Console), сгенерируйте **`AUTH_SECRET`**, задайте **`AUTH_URL`** и **`NEXT_PUBLIC_APP_URL`** (локально обычно `http://localhost:3000`).
+   Заполните **`isfin_db_DATABASE_URL`** (и при необходимости **`isfin_db_PRISMA_DATABASE_URL`** / **`isfin_db_POSTGRES_URL`** из Prisma Console), сгенерируйте **`AUTH_SECRET`** (или задайте **`NEXTAUTH_SECRET`**), задайте **`AUTH_URL`** и **`NEXT_PUBLIC_APP_URL`** (локально обычно `http://localhost:3000`).
 
 2. Установите зависимости и примените миграции:
 
@@ -45,6 +45,10 @@
 
 - Сайт: [http://localhost:3000](http://localhost:3000)  
 - Бэк-офис: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
+
+## Документы
+
+- Фетва для клиентов: `public/docs/Murabakha_fatwa.pdf` (скачивание по пути `/docs/Murabakha_fatwa.pdf`).
 
 ## Git и GitHub
 
@@ -73,7 +77,7 @@ git push -u origin main
 1. **Project → Settings → Environment Variables** — для **Production** (и при необходимости Preview):
    - **`isfin_db_DATABASE_URL`** — основная строка Prisma Postgres (`sslmode=require`).
    - **`isfin_db_PRISMA_DATABASE_URL`** и **`isfin_db_POSTGRES_URL`** — при необходимости; приложение может подставить их в **`isfin_db_DATABASE_URL`**.
-   - **`AUTH_SECRET`**, **`AUTH_URL`**, **`NEXT_PUBLIC_APP_URL`** (публичный URL сайта на Vercel).
+   - **`AUTH_SECRET`** (или **`NEXTAUTH_SECRET`**), **`AUTH_URL`**, **`NEXT_PUBLIC_APP_URL`** (публичный URL сайта на Vercel).
 2. Миграции к облачной БД (один раз):  
    `isfin_db_DATABASE_URL="…та же строка…" npx prisma migrate deploy`
 3. **Redeploy** проекта.
@@ -85,7 +89,7 @@ git push -u origin main
 - Валидация входных данных (Zod), параметризованные запросы через Prisma.
 - Ограничение частоты запросов на публичные API (in-memory; для production при нескольких инстансах лучше Redis / Upstash).
 - Заголовки в `next.config.ts`, отключён `X-Powered-By`.
-- Локально и в CI: `npm audit`, ESLint с `eslint-plugin-security`, `npm run test`, `npm run build`.
+- Локально и в CI: аудит зависимостей (prebuild), ESLint с `eslint-plugin-security`, `npm run test`, `npm run build`.
 
 ## Лицензия
 
