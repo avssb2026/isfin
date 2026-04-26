@@ -9,7 +9,19 @@ export default async function middleware(req: NextRequest) {
 
   // Keep Edge bundle small: don't import NextAuth config (it pulls Prisma/argon2).
   const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
-  const token = await getToken({ req, secret });
+  const cookieCandidates = [
+    "__Secure-authjs.session-token",
+    "authjs.session-token",
+    "__Secure-next-auth.session-token",
+    "next-auth.session-token",
+  ];
+  const cookieName = cookieCandidates.find((name) => req.cookies.get(name)?.value);
+
+  const token = await getToken({
+    req,
+    secret,
+    ...(cookieName ? { cookieName } : {}),
+  });
   if (path.startsWith("/admin") && !token) {
     const signIn = new URL("/admin/login", req.nextUrl.origin);
     signIn.searchParams.set("callbackUrl", path);
