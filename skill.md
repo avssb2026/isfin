@@ -43,12 +43,17 @@ description: >-
 
 ### Деплой / окружение
 
-- Нужны как минимум: `isfin_db_DATABASE_URL` (и при необходимости `isfin_db_PRISMA_DATABASE_URL` / `isfin_db_POSTGRES_URL`), `AUTH_SECRET`, `AUTH_URL` / публичный URL приложения, переменные `NEXT_PUBLIC_*` для калькулятора.
+- Нужны как минимум: `isfin_db_DATABASE_URL` (и при необходимости `isfin_db_PRISMA_DATABASE_URL` / `isfin_db_POSTGRES_URL`), `AUTH_SECRET` (или `NEXTAUTH_SECRET`), `AUTH_URL` / публичный URL приложения, переменные `NEXT_PUBLIC_*` для калькулятора.
 - После деплоя: `prisma migrate deploy`, при необходимости `prisma db seed`.
 
 ### Терминология в UI
 
 - Сохранять шариат-совместимые формулировки и запрет на «проценты»/«пени» в тексте интерфейса согласно `rule.md`.
+- В публичном UI использовать «платёж»/«рассрочка»; ключевую ставку не показывать (она остаётся внутренним параметром расчёта).
+
+### Middleware (Edge)
+
+- `middleware.ts` должен оставаться лёгким: не импортировать `src/auth.ts`, Prisma, `argon2`. Для проверки сессии использовать `next-auth/jwt` и учитывать cookie `authjs.session-token` / `__Secure-authjs.session-token`.
 
 ## Чеклист качества
 
