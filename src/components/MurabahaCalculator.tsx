@@ -150,30 +150,28 @@ export function MurabahaCalculator({ compact }: Props) {
           </div>
         </div>
 
-        {!showOnlyLandingFields && (
-          <label className="flex w-[7rem] shrink-0 flex-col gap-2 text-sm sm:w-[12rem]">
-            <span className="font-medium leading-snug text-[var(--text-secondary)]">
-              Срок рассрочки, мес.
-            </span>
-            <input
-              type="number"
-              min={MURABAHA_TERM_MONTHS_MIN}
-              max={MURABAHA_TERM_MONTHS_MAX}
-              className="input-modern w-full min-w-0"
-              value={months}
-              onChange={(e) => {
-                const v = Number(e.target.value);
-                if (Number.isNaN(v)) return;
-                setMonths(
-                  Math.min(
-                    MURABAHA_TERM_MONTHS_MAX,
-                    Math.max(MURABAHA_TERM_MONTHS_MIN, Math.round(v)),
-                  ),
-                );
-              }}
-            />
-          </label>
-        )}
+        <label className="flex w-[7rem] shrink-0 flex-col gap-2 text-sm sm:w-[12rem]">
+          <span className="font-medium leading-snug text-[var(--text-secondary)]">
+            Период рассрочки, мес.
+          </span>
+          <input
+            type="number"
+            min={MURABAHA_TERM_MONTHS_MIN}
+            max={MURABAHA_TERM_MONTHS_MAX}
+            className="input-modern w-full min-w-0"
+            value={months}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              if (Number.isNaN(v)) return;
+              setMonths(
+                Math.min(
+                  MURABAHA_TERM_MONTHS_MAX,
+                  Math.max(MURABAHA_TERM_MONTHS_MIN, Math.round(v)),
+                ),
+              );
+            }}
+          />
+        </label>
       </div>
 
       {result && annualParam !== null && (
