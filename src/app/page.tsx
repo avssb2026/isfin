@@ -94,7 +94,7 @@ export default function HomePage() {
               Ипотека по шариату
             </p>
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-[var(--text)] sm:text-4xl md:text-[2.5rem] md:leading-[1.15]">
-              Жильё в рассрочку с прозрачной отсроченной ценой
+              Жильё в рассрочку с прозрачной ценой
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--text-secondary)] sm:text-lg">
               Модель Мурабаха: банк приобретает объект и продаёт его вам с отсрочкой платежа. Вы
@@ -144,7 +144,7 @@ export default function HomePage() {
         <section className="mt-16 rounded-[var(--radius-2xl)] border border-[var(--border)] bg-[var(--surface)] p-8 shadow-[var(--shadow-md)] sm:p-10">
           <h2 className="text-xl font-bold text-[var(--text)] sm:text-2xl">Как это устроено</h2>
           <p className="mt-4 max-w-3xl text-[var(--text-secondary)] leading-relaxed">
-            Банк покупает жильё у продавца и перепродаёт его вам; вы погашаете отсроченную цену по
+            Банк покупает жильё у продавца и перепродаёт его вам; вы погашаете стоимость по
             графику. Документы и формулировки соответствуют внутренним шариатским стандартам банка.
           </p>
           <div className="mt-8">
